@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Mapping Explorer — Beghou Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:    #020434;
+  --navy2:   #060a4a;
+  --pink:    #E60F65;
+  --cyan:    #00C8FF;
+  --gold:    #F5B700;
+  --lavender:#EDF0FA;
+  --white:   #FFFFFF;
+  --row-hover: rgba(255,255,255,0.035);
+  --border:  rgba(255,255,255,0.08);
+  --muted:   rgba(237,240,250,0.4);
+}
+html, body { min-height: 100%; background: var(--navy); color: var(--white);
+  font-family: 'DM Sans', sans-serif; }
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background: radial-gradient(ellipse 50% 60% at 5% 50%, rgba(230,15,101,0.08) 0%, transparent 70%),
+              radial-gradient(ellipse 40% 40% at 95% 10%, rgba(0,200,255,0.07) 0%, transparent 60%);
+}
+
+/* ── LAYOUT ── */
+.shell { position:relative; z-index:1; max-width:1400px; margin:0 auto; padding:36px 32px 64px; }
+
+/* ── HEADER ── */
+.page-header { margin-bottom:28px; display:flex; align-items:flex-start; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+.header-left {}
+.eyebrow { font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--pink); font-weight:600; margin-bottom:10px; }
+.page-title { font-family:'Syne',sans-serif; font-size:clamp(22px,3vw,32px); font-weight:800; letter-spacing:-0.02em; }
+.page-sub { font-size:13px; font-weight:300; color:var(--muted); margin-top:6px; }
+.back-link { display:inline-flex; align-items:center; gap:7px; font-size:12px; color:var(--muted); text-decoration:none;
+  border:1px solid var(--border); border-radius:8px; padding:8px 14px; transition:all 0.2s;
+  white-space:nowrap; align-self:center; }
+.back-link:hover { color:var(--white); border-color:rgba(255,255,255,0.2); }
+
+/* ── CONTROLS ── */
+.controls { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:20px; align-items:center; }
+
+.search-wrap { position:relative; flex:1; min-width:200px; max-width:320px; }
+.search-wrap svg { position:absolute; left:12px; top:50%; transform:translateY(-50%); pointer-events:none; }
+#searchInput { width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--border);
+  border-radius:8px; padding:9px 12px 9px 36px; font-family:'DM Sans',sans-serif;
+  font-size:13px; color:var(--white); outline:none; transition:border-color 0.2s; }
+#searchInput::placeholder { color:var(--muted); }
+#searchInput:focus { border-color:rgba(230,15,101,0.4); }
+
+.filter-group { display:flex; gap:6px; flex-wrap:wrap; }
+.filter-label { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted);
+  display:flex; align-items:center; margin-right:2px; }
+
+.pill { display:inline-flex; align-items:center; gap:5px; padding:6px 13px; border-radius:20px;
+  font-size:11px; font-weight:500; cursor:pointer; border:1px solid transparent;
+  transition:all 0.18s; user-select:none; letter-spacing:0.02em; }
+.pill.all   { background:rgba(255,255,255,0.05); border-color:var(--border); color:var(--muted); }
+.pill.all.active { background:rgba(255,255,255,0.12); border-color:rgba(255,255,255,0.25); color:var(--white); }
+
+.pill.company { background:rgba(230,15,101,0.08); border-color:rgba(230,15,101,0.15); color:rgba(230,15,101,0.7); }
+.pill.company.active { background:rgba(230,15,101,0.2); border-color:rgba(230,15,101,0.5); color:var(--pink); }
+
+.pill.deal { background:rgba(230,15,101,0.08); border-color:rgba(230,15,101,0.15); color:rgba(230,15,101,0.7); }
+.pill.deal.active { background:rgba(230,15,101,0.2); border-color:rgba(230,15,101,0.5); color:var(--pink); }
+
+.pill.product { background:rgba(230,15,101,0.08); border-color:rgba(230,15,101,0.15); color:rgba(230,15,101,0.7); }
+.pill.product.active { background:rgba(230,15,101,0.2); border-color:rgba(230,15,101,0.5); color:var(--pink); }
+
+.pill.intacct { background:rgba(0,200,255,0.08); border-color:rgba(0,200,255,0.15); color:rgba(0,200,255,0.7); }
+.pill.intacct.active { background:rgba(0,200,255,0.18); border-color:rgba(0,200,255,0.5); color:var(--cyan); }
+
+.pill.ruddr { background:rgba(245,183,0,0.08); border-color:rgba(245,183,0,0.15); color:rgba(245,183,0,0.7); }
+.pill.ruddr.active { background:rgba(245,183,0,0.18); border-color:rgba(245,183,0,0.5); color:var(--gold); }
+
+.pill.contract-obj { background:rgba(0,200,255,0.06); border-color:rgba(0,200,255,0.12); color:rgba(0,200,255,0.6); }
+.pill.contract-obj.active { background:rgba(0,200,255,0.18); border-color:rgba(0,200,255,0.5); color:var(--cyan); }
+.pill.project-obj { background:rgba(0,200,255,0.06); border-color:rgba(0,200,255,0.12); color:rgba(0,200,255,0.6); }
+.pill.project-obj.active { background:rgba(0,200,255,0.18); border-color:rgba(0,200,255,0.5); color:var(--cyan); }
+.pill.cline-obj { background:rgba(0,200,255,0.06); border-color:rgba(0,200,255,0.12); color:rgba(0,200,255,0.6); }
+.pill.cline-obj.active { background:rgba(0,200,255,0.18); border-color:rgba(0,200,255,0.5); color:var(--cyan); }
+.pill.rproject-obj { background:rgba(245,183,0,0.06); border-color:rgba(245,183,0,0.12); color:rgba(245,183,0,0.6); }
+.pill.rproject-obj.active { background:rgba(245,183,0,0.18); border-color:rgba(245,183,0,0.5); color:var(--gold); }
+
+/* ── RESULT COUNT ── */
+.result-bar { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.result-count { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--white); }
+.result-of { font-size:12px; color:var(--muted); }
+.divider { width:1px; height:14px; background:var(--border); }
+.view-toggle { display:flex; gap:4px; }
+.view-btn { padding:5px 11px; border-radius:6px; font-size:11px; font-weight:500; cursor:pointer;
+  border:1px solid var(--border); background:transparent; color:var(--muted); transition:all 0.15s; }
+.view-btn.active { background:rgba(255,255,255,0.08); color:var(--white); border-color:rgba(255,255,255,0.2); }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x:auto; border-radius:12px; border:1px solid var(--border); }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+thead th {
+  background:rgba(255,255,255,0.03); padding:11px 14px; text-align:left;
+  font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--muted); border-bottom:1px solid var(--border); white-space:nowrap;
+  cursor:pointer; user-select:none;
+}
+thead th:hover { color:var(--white); }
+thead th .sort-icon { margin-left:4px; opacity:0.4; font-size:10px; }
+thead th.sorted .sort-icon { opacity:1; color:var(--pink); }
+
+tbody tr { border-bottom:1px solid rgba(255,255,255,0.04); cursor:pointer; transition:background 0.12s; }
+tbody tr:last-child { border-bottom:none; }
+tbody tr:hover { background:var(--row-hover); }
+tbody tr.expanded { background:rgba(255,255,255,0.03); }
+tbody tr.expanded:hover { background:rgba(255,255,255,0.05); }
+tbody tr.notes-row { background:rgba(0,0,0,0.15); cursor:default; }
+tbody tr.notes-row:hover { background:rgba(0,0,0,0.18); }
+tbody tr.hidden { display:none; }
+
+td { padding:10px 14px; vertical-align:middle; }
+
+/* col widths */
+.col-obj   { width:100px; }
+.col-src   { width:160px; }
+.col-api   { width:160px; }
+.col-type  { width:90px; }
+.col-arrow { width:36px; text-align:center; }
+.col-sys   { width:90px; }
+.col-tobj  { width:110px; }
+.col-tfield{ width:160px; }
+.col-exp   { width:32px; text-align:center; }
+
+/* badges in table */
+.obj-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:10px; font-weight:600; letter-spacing:0.08em;
+  padding:3px 9px; border-radius:10px; white-space:nowrap;
+}
+.obj-badge.company { background:rgba(230,15,101,0.15); color:var(--pink); }
+.obj-badge.deal    { background:rgba(230,15,101,0.12); color:#ff5fa0; }
+.obj-badge.product { background:rgba(230,15,101,0.10); color:#ff87b8; }
+
+.sys-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:10px; font-weight:600; letter-spacing:0.08em;
+  padding:3px 9px; border-radius:10px; white-space:nowrap;
+}
+.sys-badge.intacct { background:rgba(0,200,255,0.12); color:var(--cyan); }
+.sys-badge.ruddr   { background:rgba(245,183,0,0.12);  color:var(--gold); }
+
+.tobj-badge {
+  display:inline-flex; align-items:center;
+  font-size:10px; font-weight:500;
+  padding:3px 8px; border-radius:8px; white-space:nowrap;
+}
+.tobj-badge.contract { background:rgba(0,200,255,0.08); color:rgba(0,200,255,0.8); border:1px solid rgba(0,200,255,0.15); }
+.tobj-badge.project  { background:rgba(0,200,255,0.06); color:rgba(0,200,255,0.65); border:1px solid rgba(0,200,255,0.12); }
+.tobj-badge.cline    { background:rgba(0,200,255,0.05); color:rgba(0,200,255,0.55); border:1px solid rgba(0,200,255,0.1); }
+.tobj-badge.rproject { background:rgba(245,183,0,0.08); color:rgba(245,183,0,0.8);  border:1px solid rgba(245,183,0,0.15); }
+
+.type-badge {
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:500;
+  padding:2px 7px; border-radius:5px;
+  background:rgba(255,255,255,0.06); color:rgba(237,240,250,0.5);
+  border:1px solid rgba(255,255,255,0.08);
+}
+.type-badge.string   { color:rgba(100,220,130,0.8); background:rgba(100,220,130,0.06); border-color:rgba(100,220,130,0.12); }
+.type-badge.number   { color:rgba(100,160,255,0.8); background:rgba(100,160,255,0.06); border-color:rgba(100,160,255,0.12); }
+.type-badge.date     { color:rgba(255,180,100,0.8); background:rgba(255,180,100,0.06); border-color:rgba(255,180,100,0.12); }
+.type-badge.datetime { color:rgba(255,180,100,0.7); background:rgba(255,180,100,0.05); border-color:rgba(255,180,100,0.10); }
+.type-badge.enum     { color:rgba(200,150,255,0.8); background:rgba(200,150,255,0.06); border-color:rgba(200,150,255,0.12); }
+
+.src-label { font-weight:500; color:var(--white); }
+.src-api   { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); margin-top:2px; }
+
+.tgt-field { font-weight:500; }
+.tgt-field.empty { color:rgba(255,255,255,0.25); font-style:italic; font-weight:300; }
+
+.arrow-icon { color:var(--pink); opacity:0.6; font-size:14px; }
+
+.expand-btn { width:22px; height:22px; border-radius:5px; border:1px solid var(--border);
+  background:rgba(255,255,255,0.03); display:inline-flex; align-items:center;
+  justify-content:center; font-size:11px; color:var(--muted); transition:all 0.15s; }
+tbody tr:hover .expand-btn { border-color:rgba(255,255,255,0.2); color:var(--white); }
+tbody tr.expanded .expand-btn { background:rgba(230,15,101,0.15); border-color:rgba(230,15,101,0.3); color:var(--pink); }
+
+/* notes expansion row */
+.notes-cell { padding:0 14px 0 48px; }
+.notes-inner {
+  padding:12px 16px; margin:8px 0 12px;
+  background:rgba(255,255,255,0.03); border-radius:8px;
+  border-left:2px solid rgba(230,15,101,0.3);
+  font-size:12px; font-weight:300; line-height:1.65; color:rgba(237,240,250,0.65);
+}
+.notes-inner.empty { color:rgba(255,255,255,0.2); font-style:italic; }
+
+/* ── BREADCRUMB ── */
+.filter-crumb {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 14px; border-radius: 8px; margin-bottom: 16px;
+  background: rgba(230,15,101,0.07); border: 1px solid rgba(230,15,101,0.18);
+  font-size: 12px; color: rgba(237,240,250,0.7);
+  animation: fadeUp 0.4s ease both;
+}
+.filter-crumb a { color: var(--pink); text-decoration: none; font-weight: 500; }
+.filter-crumb a:hover { text-decoration: underline; }
+.crumb-sep { opacity: 0.4; }
+.crumb-tag {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+  padding: 2px 8px; border-radius: 10px; margin-left: 2px;
+}
+.crumb-tag.sys-intacct { background: rgba(0,200,255,0.15); color: var(--cyan); }
+.crumb-tag.sys-ruddr   { background: rgba(245,183,0,0.15);  color: var(--gold); }
+.crumb-tag.obj         { background: rgba(230,15,101,0.15); color: var(--pink); }
+.crumb-tag.tobj        { background: rgba(255,255,255,0.08); color: rgba(237,240,250,0.7); }
+.empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
+.empty-state .emoji { font-size:32px; margin-bottom:12px; }
+.empty-state p { font-size:14px; }
+
+/* ── FOOTER ── */
+.footer { margin-top:36px; text-align:center; font-size:10px; letter-spacing:0.12em;
+  text-transform:uppercase; color:rgba(237,240,250,0.18); }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.shell { animation:fadeUp 0.5s ease both; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="eyebrow">Beghou Consulting · Field-Level Mapping</div>
+      <div class="page-title">Integration Mapping Explorer</div>
+      <div class="page-sub">Browse every automated field mapping across HubSpot → Intacct &amp; Ruddr</div>
+    </div>
+    <a href="integration_architecture.html" class="back-link">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M8 2L4 6L8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      Architecture Overview
+    </a>
+  </div>
+
+  <!-- BREADCRUMB (populated by JS if arriving from architecture view) -->
+  <div id="filterCrumb" style="display:none" class="filter-crumb"></div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <circle cx="6" cy="6" r="4.5" stroke="rgba(237,240,250,0.4)" stroke-width="1.2"/>
+        <line x1="9.5" y1="9.5" x2="13" y2="13" stroke="rgba(237,240,250,0.4)" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <input id="searchInput" type="text" placeholder="Search fields, API names, notes…">
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-label">Object</span>
+      <span class="pill all active" data-group="obj" data-val="all">All</span>
+      <span class="pill company" data-group="obj" data-val="Company">Company</span>
+      <span class="pill deal" data-group="obj" data-val="Deal">Deal</span>
+      <span class="pill product" data-group="obj" data-val="Product">Product</span>
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-label">System</span>
+      <span class="pill all active" data-group="sys" data-val="all">All</span>
+      <span class="pill intacct" data-group="sys" data-val="Intacct">Intacct</span>
+      <span class="pill ruddr" data-group="sys" data-val="Ruddr">Ruddr</span>
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-label">Target Object</span>
+      <span class="pill all active" data-group="tobj" data-val="all">All</span>
+      <span class="pill contract-obj" data-group="tobj" data-val="Contract">Contract</span>
+      <span class="pill project-obj" data-group="tobj" data-val="Project">Project</span>
+      <span class="pill cline-obj" data-group="tobj" data-val="contract line">Contract Line</span>
+    </div>
+  </div>
+
+  <!-- RESULT BAR -->
+  <div class="result-bar">
+    <span class="result-count" id="resultCount">155</span>
+    <span class="result-of">of 155 mappings</span>
+    <div class="divider"></div>
+    <span style="font-size:11px;color:var(--muted)">Click any row to expand notes</span>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <table id="mappingTable">
+      <thead>
+        <tr>
+          <th class="col-obj" data-col="src_object">Source Object <span class="sort-icon">↕</span></th>
+          <th class="col-src" data-col="src_label">Source Field <span class="sort-icon">↕</span></th>
+          <th class="col-api" data-col="src_api">API Name <span class="sort-icon">↕</span></th>
+          <th class="col-type" data-col="src_type">Type <span class="sort-icon">↕</span></th>
+          <th class="col-arrow"></th>
+          <th class="col-sys" data-col="tgt_system">Target System <span class="sort-icon">↕</span></th>
+          <th class="col-tobj" data-col="tgt_object">Target Object <span class="sort-icon">↕</span></th>
+          <th class="col-tfield" data-col="tgt_field">Target Field <span class="sort-icon">↕</span></th>
+          <th class="col-exp"></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div id="emptyState" class="empty-state" style="display:none">
+      <div class="emoji">🔍</div>
+      <p>No mappings match your current filters.</p>
+    </div>
+  </div>
+
+  <div class="footer">Beghou Consulting · Commercial Operations Architecture · Confidential</div>
+</div>
+
+<script>
+const DATA = [{"src_object":"Company","src_label":"Company name","src_api":"name","src_type":"string","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"Company Name","cardinality":"1:1","notes":"The name of the company or organization. Powered by HubSpot Insights.; Will need to pass one value to two fields"},{"src_object":"Company","src_label":"Company name","src_api":"name","src_type":"string","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"Company","cardinality":"1:1","notes":"The name of the company or organization. Powered by HubSpot Insights.; Will need to pass one value to two fields"},{"src_object":"Company","src_label":"Company name","src_api":"name","src_type":"string","tgt_system":"Intacct","tgt_object":"Contract","tgt_field":"Client","cardinality":"1:1","notes":"The name of the company or organization. Powered by HubSpot Insights."},{"src_object":"Company","src_label":"Company name","src_api":"name","src_type":"string","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Client","cardinality":"1:1","notes":"The name of the company or organization. Powered by HubSpot Insights."},{"src_object":"Deal","src_label":"Total Contract Value ($)","src_api":"total_sow___sold","src_type":"number","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Contract amount","cardinality":"1:1","notes":"Total Contract Value - sum of all years : Contract Value $  (Sum 2020-2030)"},{"src_object":"Deal","src_label":"SOW Attached","src_api":"sow_attached","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"Contract","tgt_field":"Attachment","cardinality":"1:1","notes":"Denotes whether the executed SOW has been added to the deal as an attachment.; In Intacct, this is an attachment of the SOW"},{"src_object":"Deal","src_label":"SOW Attached","src_api":"sow_attached","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"SOW Link","cardinality":"1:1","notes":"Denotes whether the executed SOW has been added to the deal as an attachment.; In Intacct, this is a link to HubSpot"},{"src_object":"Deal","src_label":"SOW Attached","src_api":"sow_attached","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Denotes whether the executed SOW has been added to the deal as an attachment."},{"src_object":"Deal","src_label":"Active Project?","src_api":"active_project_","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Status","cardinality":"1:1","notes":"Indicates whether the project has a future project end date and is considered active.; Options are Active, Inactive"},{"src_object":"Deal","src_label":"Billing Type","src_api":"billing_type","src_type":"enumeration","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Is this deal Fixed Fee or Time & Materials/Ad Hoc?"},{"src_object":"Deal","src_label":"Billing Type","src_api":"billing_type","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Billing type","cardinality":"1:1","notes":"Is this deal Fixed Fee or Time & Materials/Ad Hoc?"},{"src_object":"Deal","src_label":"Deal Name","src_api":"dealname","src_type":"string","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"Project Name","cardinality":"1:1","notes":"The name given to this deal."},{"src_object":"Deal","src_label":"Deal Name","src_api":"dealname","src_type":"string","tgt_system":"Intacct","tgt_object":"Contract","tgt_field":"Contract name","cardinality":"1:1","notes":"The name given to this deal."},{"src_object":"Deal","src_label":"Deal Name","src_api":"dealname","src_type":"string","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Project name","cardinality":"1:1","notes":"The name given to this deal."},{"src_object":"Deal","src_label":"Function","src_api":"function","src_type":"enumeration","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Deal","src_label":"Record ID","src_api":"hs_object_id","src_type":"number","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"Project Code","cardinality":"1:1","notes":"The unique ID for this record. This value is set automatically by HubSpot."},{"src_object":"Deal","src_label":"Record ID","src_api":"hs_object_id","src_type":"number","tgt_system":"Intacct","tgt_object":"Contract","tgt_field":"Contract ID","cardinality":"1:1","notes":"The unique ID for this record. This value is set automatically by HubSpot."},{"src_object":"Deal","src_label":"Record ID","src_api":"hs_object_id","src_type":"number","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Project ID","cardinality":"1:1","notes":"The unique ID for this record. This value is set automatically by HubSpot."},{"src_object":"Deal","src_label":"Deal owner","src_api":"hubspot_owner_id","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Project manager","cardinality":"1:1","notes":"The owner of the deal"},{"src_object":"Deal","src_label":"Project End Date","src_api":"project_end_date","src_type":"date","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"Project Time Frame","cardinality":"1:1","notes":"Will need to concatenate Start Date + End Date as Ruddr only has 1 field."},{"src_object":"Deal","src_label":"Project End Date","src_api":"project_end_date","src_type":"date","tgt_system":"Intacct","tgt_object":"Contract","tgt_field":"Start date","cardinality":"1:1","notes":""},{"src_object":"Deal","src_label":"Project End Date","src_api":"project_end_date","src_type":"date","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Begin date","cardinality":"1:1","notes":""},{"src_object":"Deal","src_label":"Project Start Date","src_api":"project_start_date","src_type":"date","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"Project Time Frame","cardinality":"1:1","notes":"Will need to concatenate Start Date + End Date as Ruddr only has 1 field."},{"src_object":"Deal","src_label":"Project Start Date","src_api":"project_start_date","src_type":"date","tgt_system":"Intacct","tgt_object":"Contract","tgt_field":"End date","cardinality":"1:1","notes":""},{"src_object":"Deal","src_label":"Project Start Date","src_api":"project_start_date","src_type":"date","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"End date","cardinality":"1:1","notes":""},{"src_object":"Deal","src_label":"Intacct Contract tracking","src_api":"intacct_contract_tracking","src_type":"","tgt_system":"Intacct","tgt_object":"Contract","tgt_field":"Contract tracking","cardinality":"1:1","notes":"Default to Full contract"},{"src_object":"Deal","src_label":"Intacct Term type","src_api":"intacct_term_type","src_type":"","tgt_system":"Intacct","tgt_object":"Contract","tgt_field":"Term type","cardinality":"1:1","notes":"Intacct defaults to Termed"},{"src_object":"Deal","src_label":"Primary contact","src_api":"primary_contact","src_type":"","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Primary contact","cardinality":"1:1","notes":"Should come from HubSpot"},{"src_object":"Deal","src_label":"Bill to contact","src_api":"bill_to_contact","src_type":"","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Bill-to-contact","cardinality":"1:1","notes":"Should come from HubSpot"},{"src_object":"Deal","src_label":"Bill to address","src_api":"bill_to_address","src_type":"","tgt_system":"Intacct","tgt_object":"Contract","tgt_field":"Bill to","cardinality":"1:1","notes":"Should come from HubSpot"},{"src_object":"Deal","src_label":"Payment term","src_api":"payment_term","src_type":"","tgt_system":"Intacct","tgt_object":"Contract","tgt_field":"Payment term","cardinality":"1:1","notes":"Should come from HubSpot"},{"src_object":"Deal","src_label":"Payment term","src_api":"payment_term","src_type":"","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Term","cardinality":"1:1","notes":"Should come from HubSpot"},{"src_object":"Deal","src_label":"Intacct Location or entity","src_api":"intacct_location","src_type":"","tgt_system":"Intacct","tgt_object":"Contract","tgt_field":"Location or entity","cardinality":"1:1","notes":"Default to E-1000"},{"src_object":"Deal","src_label":"Intacct Location or entity","src_api":"intacct_location","src_type":"","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Location or entity","cardinality":"1:1","notes":"Default to E-1000"},{"src_object":"Deal","src_label":"Currency","src_api":"currency","src_type":"","tgt_system":"Intacct","tgt_object":"Contract","tgt_field":"Base currency","cardinality":"1:1","notes":"Default to USD"},{"src_object":"Deal","src_label":"Currency","src_api":"currency","src_type":"","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Project currency","cardinality":"1:1","notes":"Default to USD"},{"src_object":"Deal","src_label":"Renew","src_api":"renew","src_type":"","tgt_system":"Intacct","tgt_object":"Contract","tgt_field":"Renew","cardinality":"1:1","notes":"Default to unchecked"},{"src_object":"Deal","src_label":"Period","src_api":"period","src_type":"","tgt_system":"Intacct","tgt_object":"Contract","tgt_field":"Period","cardinality":"1:1","notes":"Intacct defaults to Months"},{"src_object":"Deal","src_label":"Purchase order number","src_api":"po_number","src_type":"","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Purchase order number","cardinality":"1:1","notes":"Should come from HubSpot"},{"src_object":"Deal","src_label":"Purchase order amount","src_api":"po_amount","src_type":"","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Purchase order amount","cardinality":"1:1","notes":"Should come from HubSpot"},{"src_object":"Deal","src_label":"Intacct Invoice with parent","src_api":"intacct_invoice_with_parent","src_type":"","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Invoice with parent","cardinality":"1:1","notes":"Default is unchecked"},{"src_object":"Deal","src_label":"Project category","src_api":"project_category","src_type":"","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Project category","cardinality":"1:1","notes":"Default is Contract"},{"src_object":"Deal","src_label":"Associated Products","src_api":"intacct_associated_products","src_type":"","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Associated Products","cardinality":"1:1","notes":"Default is None"},{"src_object":"Deal","src_label":"Default employee expenses to billable","src_api":"intacct_employee_billable","src_type":"","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Default employee expenses to billable","cardinality":"1:1","notes":"Default is checked box"},{"src_object":"Deal","src_label":"Default AP and PO entries to billable","src_api":"intacct_AP_PO_billable","src_type":"","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Default AP and PO entries to billable","cardinality":"1:1","notes":"Default is checked box"},{"src_object":"Deal","src_label":"Timesheet and expense user restrictions","src_api":"intacct_timesheet_restrictions","src_type":"","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Timesheet and expense user restrictions","cardinality":"1:1","notes":"Default is Only users assigned to the project can enter time"},{"src_object":"Deal","src_label":"If actual billings exceed projected billing amount","src_api":"intacct_actual_billings_exceed_projected_billings","src_type":"","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"If actual billings exceed projected billing amount","cardinality":"1:1","notes":"Default is Do nothing"},{"src_object":"Deal","src_label":"Project status","src_api":"project_status","src_type":"","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Project status","cardinality":"1:1","notes":"Several options - see drop-down in Intacct"},{"src_object":"Product","src_label":"Unit cost","src_api":"hs_cost_of_goods_sold","src_type":"number","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The amount that sold goods cost the HubSpot customer"},{"src_object":"Product","src_label":"Unit cost","src_api":"hs_cost_of_goods_sold","src_type":"number","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The amount that sold goods cost the HubSpot customer"},{"src_object":"Product","src_label":"Unit cost","src_api":"hs_cost_of_goods_sold","src_type":"number","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"The amount that sold goods cost the HubSpot customer"},{"src_object":"Product","src_label":"Unit price","src_api":"price","src_type":"number","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Cost of product; needed in Ruddr?"},{"src_object":"Product","src_label":"Unit price","src_api":"price","src_type":"number","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Cost of product"},{"src_object":"Product","src_label":"Unit price","src_api":"price","src_type":"number","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\"Enter Amount\"","cardinality":"1:1","notes":"Cost of product; enter value"},{"src_object":"Product","src_label":"Billing frequency","src_api":"recurringbillingfrequency","src_type":"enumeration","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"How often a product with recurring billing is billed."},{"src_object":"Product","src_label":"Billing frequency","src_api":"recurringbillingfrequency","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"How often a product with recurring billing is billed."},{"src_object":"Product","src_label":"Billing frequency","src_api":"recurringbillingfrequency","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"billing frequency","cardinality":"1:1","notes":"Available options in Intacct: Monthly, Quarterly, Annually. Other frequencies need a billing template."},{"src_object":"Product","src_label":"Billing frequency","src_api":"recurringbillingfrequency","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"flat/fixed amount frequency","cardinality":"1:1","notes":"Available options: one-time, use billing template, include with every invoice."},{"src_object":"Product","src_label":"Create Date","src_api":"createdate","src_type":"datetime","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The date the product was created"},{"src_object":"Product","src_label":"Create Date","src_api":"createdate","src_type":"datetime","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The date the product was created"},{"src_object":"Product","src_label":"Create Date","src_api":"createdate","src_type":"datetime","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"The date the product was created"},{"src_object":"Product","src_label":"Product description","src_api":"description","src_type":"string","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Full description of product"},{"src_object":"Product","src_label":"Product description","src_api":"description","src_type":"string","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Description","cardinality":"1:1","notes":"Full description of product; enter value"},{"src_object":"Product","src_label":"Product description","src_api":"description","src_type":"string","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"Item description","cardinality":"1:1","notes":"Full description of product; enter value"},{"src_object":"Product","src_label":"End_Date","src_api":"end_date","src_type":"date","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"End date","cardinality":"1:1","notes":"Enter value"},{"src_object":"Product","src_label":"End_Date","src_api":"end_date","src_type":"date","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"End Date","cardinality":"1:1","notes":"Enter value"},{"src_object":"Product","src_label":"End_Date","src_api":"end_date","src_type":"date","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"Line end","cardinality":"1:1","notes":"Enter value"},{"src_object":"Product","src_label":"End_Date","src_api":"end_date","src_type":"date","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"Revenue Section \"End date\"","cardinality":"1:1","notes":"Enter value"},{"src_object":"Product","src_label":"Function","src_api":"function","src_type":"enumeration","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Function","src_api":"function","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Function","src_api":"function","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Created by user ID","src_api":"hs_created_by_user_id","src_type":"number","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The user who created this record. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Created by user ID","src_api":"hs_created_by_user_id","src_type":"number","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The user who created this record. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Created by user ID","src_api":"hs_created_by_user_id","src_type":"number","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"The user who created this record. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Object create date/time","src_api":"hs_createdate","src_type":"datetime","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The date and time at which this object was created. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Object create date/time","src_api":"hs_createdate","src_type":"datetime","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The date and time at which this object was created. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Object create date/time","src_api":"hs_createdate","src_type":"datetime","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"The date and time at which this object was created. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Image Url","src_api":"hs_images","src_type":"string","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Product images."},{"src_object":"Product","src_label":"Image Url","src_api":"hs_images","src_type":"string","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Product images."},{"src_object":"Product","src_label":"Image Url","src_api":"hs_images","src_type":"string","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"Product images."},{"src_object":"Product","src_label":"Last Modified Date","src_api":"hs_lastmodifieddate","src_type":"datetime","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The date any property on this product was modified"},{"src_object":"Product","src_label":"Last Modified Date","src_api":"hs_lastmodifieddate","src_type":"datetime","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The date any property on this product was modified"},{"src_object":"Product","src_label":"Last Modified Date","src_api":"hs_lastmodifieddate","src_type":"datetime","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"The date any property on this product was modified"},{"src_object":"Product","src_label":"Merged record IDs","src_api":"hs_merged_object_ids","src_type":"enumeration","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"List of record IDs merged into this record. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Merged record IDs","src_api":"hs_merged_object_ids","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"List of record IDs merged into this record. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Merged record IDs","src_api":"hs_merged_object_ids","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"List of record IDs merged into this record. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Record ID","src_api":"hs_object_id","src_type":"number","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The unique ID for this record. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Record ID","src_api":"hs_object_id","src_type":"number","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The unique ID for this record. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Record ID","src_api":"hs_object_id","src_type":"number","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"The unique ID for this record. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Record source detail 1","src_api":"hs_object_source_detail_1","src_type":"string","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"First level of detail on how this record was created."},{"src_object":"Product","src_label":"Record source detail 1","src_api":"hs_object_source_detail_1","src_type":"string","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"First level of detail on how this record was created."},{"src_object":"Product","src_label":"Record source detail 1","src_api":"hs_object_source_detail_1","src_type":"string","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"First level of detail on how this record was created."},{"src_object":"Product","src_label":"Record source detail 2","src_api":"hs_object_source_detail_2","src_type":"string","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Second level of detail on how this record was created."},{"src_object":"Product","src_label":"Record source detail 2","src_api":"hs_object_source_detail_2","src_type":"string","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Second level of detail on how this record was created."},{"src_object":"Product","src_label":"Record source detail 2","src_api":"hs_object_source_detail_2","src_type":"string","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"Second level of detail on how this record was created."},{"src_object":"Product","src_label":"Record source detail 3","src_api":"hs_object_source_detail_3","src_type":"string","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Third level of detail on how this record was created."},{"src_object":"Product","src_label":"Record source detail 3","src_api":"hs_object_source_detail_3","src_type":"string","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Third level of detail on how this record was created."},{"src_object":"Product","src_label":"Record source detail 3","src_api":"hs_object_source_detail_3","src_type":"string","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"Third level of detail on how this record was created."},{"src_object":"Product","src_label":"Record source","src_api":"hs_object_source_label","src_type":"enumeration","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"How this record was created."},{"src_object":"Product","src_label":"Record source","src_api":"hs_object_source_label","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"How this record was created."},{"src_object":"Product","src_label":"Record source","src_api":"hs_object_source_label","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"How this record was created."},{"src_object":"Product","src_label":"Product type","src_api":"hs_product_type","src_type":"enumeration","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Inventory, Non-Inventory or Service."},{"src_object":"Product","src_label":"Product type","src_api":"hs_product_type","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Project Type","cardinality":"1:1","notes":"List must be created in Intacct prior to being selected."},{"src_object":"Product","src_label":"Product type","src_api":"hs_product_type","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"Inventory, Non-Inventory or Service."},{"src_object":"Product","src_label":"SKU","src_api":"hs_sku","src_type":"string","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Unique product identifier"},{"src_object":"Product","src_label":"SKU","src_api":"hs_sku","src_type":"string","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Unique product identifier"},{"src_object":"Product","src_label":"SKU","src_api":"hs_sku","src_type":"string","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"Item","cardinality":"1:1","notes":"All SKU options must exist in Intacct as Items"},{"src_object":"Product","src_label":"Updated by user ID","src_api":"hs_updated_by_user_id","src_type":"number","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The user who last updated this record. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Updated by user ID","src_api":"hs_updated_by_user_id","src_type":"number","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The user who last updated this record. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Updated by user ID","src_api":"hs_updated_by_user_id","src_type":"number","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"The user who last updated this record. Set automatically by HubSpot."},{"src_object":"Product","src_label":"URL","src_api":"hs_url","src_type":"string","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Product url."},{"src_object":"Product","src_label":"URL","src_api":"hs_url","src_type":"string","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Product url."},{"src_object":"Product","src_label":"URL","src_api":"hs_url","src_type":"string","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"Product url."},{"src_object":"Product","src_label":"Owner assigned date","src_api":"hubspot_owner_assigneddate","src_type":"datetime","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Most recent timestamp of when an owner was assigned. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Owner assigned date","src_api":"hubspot_owner_assigneddate","src_type":"datetime","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Most recent timestamp of when an owner was assigned. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Owner assigned date","src_api":"hubspot_owner_assigneddate","src_type":"datetime","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"Most recent timestamp of when an owner was assigned. Set automatically by HubSpot."},{"src_object":"Product","src_label":"Owner","src_api":"hubspot_owner_id","src_type":"enumeration","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The owner of the object."},{"src_object":"Product","src_label":"Owner","src_api":"hubspot_owner_id","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"The owner of the object."},{"src_object":"Product","src_label":"Owner","src_api":"hubspot_owner_id","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"The owner of the object."},{"src_object":"Product","src_label":"In-year Revenue","src_api":"in_year_revenue","src_type":"number","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Current year revenue and pipeline vs. total lifetime contract value."},{"src_object":"Product","src_label":"In-year Revenue","src_api":"in_year_revenue","src_type":"number","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Current year revenue and pipeline vs. total lifetime contract value."},{"src_object":"Product","src_label":"In-year Revenue","src_api":"in_year_revenue","src_type":"number","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"Current year revenue and pipeline vs. total lifetime contract value."},{"src_object":"Product","src_label":"2025","src_api":"n2025","src_type":"number","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"2025","src_api":"n2025","src_type":"number","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"2025","src_api":"n2025","src_type":"number","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"2026","src_api":"n2026","src_type":"number","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"2026","src_api":"n2026","src_type":"number","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"2026","src_api":"n2026","src_type":"number","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Name","src_api":"name","src_type":"string","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Product name"},{"src_object":"Product","src_label":"Name","src_api":"name","src_type":"string","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Project name","cardinality":"1:1","notes":"Concatenate deal id + Name e.g. \"#####-Business Intelligence Deployment\""},{"src_object":"Product","src_label":"Name","src_api":"name","src_type":"string","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"Item description","cardinality":"1:1","notes":"Concatenate deal id + Name. Note: breaks if same SKU appears on a deal multiple times."},{"src_object":"Product","src_label":"Roll-up in Ruddr","src_api":"roll_up_in_ruddr","src_type":"enumeration","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Roll-up in Ruddr","src_api":"roll_up_in_ruddr","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Roll-up in Ruddr","src_api":"roll_up_in_ruddr","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Ruddr Project Name","src_api":"ruddr_project_name","src_type":"string","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"Project Name","cardinality":"1:1","notes":"Passes into Ruddr as the Project Name. Refines the name Consultants and Clients see during project execution."},{"src_object":"Product","src_label":"Ruddr Project Name","src_api":"ruddr_project_name","src_type":"string","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Passes into Ruddr as the Project Name."},{"src_object":"Product","src_label":"Ruddr Project Name","src_api":"ruddr_project_name","src_type":"string","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"project","cardinality":"1:1","notes":"Project must already exist in Intacct to be selected."},{"src_object":"Product","src_label":"Solution","src_api":"solution","src_type":"enumeration","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Solution","src_api":"solution","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Solution","src_api":"solution","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Solution Area","src_api":"solution_area","src_type":"enumeration","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Solution Area","src_api":"solution_area","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Solution Area","src_api":"solution_area","src_type":"enumeration","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Start_Date","src_api":"start_date","src_type":"date","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"Start Date","cardinality":"1:1","notes":"Enter value"},{"src_object":"Product","src_label":"Start_Date","src_api":"start_date","src_type":"date","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"Begin Date","cardinality":"1:1","notes":"Enter value"},{"src_object":"Product","src_label":"Start_Date","src_api":"start_date","src_type":"date","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"Line start","cardinality":"1:1","notes":"Enter value"},{"src_object":"Product","src_label":"Start_Date","src_api":"start_date","src_type":"date","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"GL posting","cardinality":"1:1","notes":"Enter value"},{"src_object":"Product","src_label":"Start_Date","src_api":"start_date","src_type":"date","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"Revenue Section \"Start date\"","cardinality":"1:1","notes":"Enter value"},{"src_object":"Product","src_label":"Timeline (months)","src_api":"duration","src_type":"number","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Timeline (months)","src_api":"duration","src_type":"number","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Timeline (months)","src_api":"duration","src_type":"number","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":""},{"src_object":"Product","src_label":"Term","src_api":"hs_recurring_billing_period","src_type":"string","tgt_system":"Ruddr","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Product recurring billing duration"},{"src_object":"Product","src_label":"Term","src_api":"hs_recurring_billing_period","src_type":"string","tgt_system":"Intacct","tgt_object":"Project","tgt_field":"\u2014","cardinality":"1:1","notes":"Product recurring billing duration"},{"src_object":"Product","src_label":"Term","src_api":"hs_recurring_billing_period","src_type":"string","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"\u2014","cardinality":"1:1","notes":"Product recurring billing duration"},{"src_object":"Product","src_label":"Term","src_api":"hs_recurring_billing_period","src_type":"string","tgt_system":"Intacct","tgt_object":"contract line","tgt_field":"Billing frequency","cardinality":"1:1","notes":"Options in Intacct: Monthly, Quarterly, Annually"}];
+
+// ── URL PARAM BOOTSTRAP ──────────────────────────────────────────────
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const sys  = params.get('sys');
+  const obj  = params.get('obj');
+  const tobj = params.get('tobj');
+
+  if (sys)  filters.sys  = sys;
+  if (obj)  filters.obj  = obj;
+  if (tobj) filters.tobj = decodeURIComponent(tobj);
+
+  // Build breadcrumb if any param is set
+  if (sys || obj || tobj) {
+    const crumb = document.getElementById('filterCrumb');
+    let parts = `<a href="integration_architecture.html">← Architecture Overview</a>`;
+    parts += `<span class="crumb-sep">/</span> Filtered by:`;
+    if (obj)  parts += ` <span class="crumb-tag obj">${obj}</span>`;
+    if (sys) {
+      const cls = sys.toLowerCase() === 'intacct' ? 'sys-intacct' : 'sys-ruddr';
+      parts += ` <span class="crumb-tag ${cls}">${sys}</span>`;
+    }
+    if (tobj) parts += ` <span class="crumb-tag tobj">${decodeURIComponent(tobj)}</span>`;
+    crumb.innerHTML = parts;
+    crumb.style.display = 'flex';
+  }
+})();
+
+// Sync pill active states to initial filter values
+function syncPills() {
+  ['obj','sys','tobj'].forEach(grp => {
+    document.querySelectorAll(`.pill[data-group="${grp}"]`).forEach(p => {
+      p.classList.toggle('active', p.dataset.val === filters[grp] || (filters[grp] === 'all' && p.dataset.val === 'all'));
+    });
+  });
+  // Handle tobj pill for "contract line" value
+  if (filters.tobj === 'contract line') {
+    document.querySelectorAll('.pill[data-group="tobj"]').forEach(p => {
+      p.classList.toggle('active', p.dataset.val === 'contract line');
+    });
+  }
+}
+
+// ── STATE ──────────────────────────────────────────────────────────────
+let filters = { obj:'all', sys:'all', tobj:'all' };
+let search = '';
+let sortCol = null, sortDir = 1;
+let expandedRows = new Set();
+
+function filtered() {
+  return DATA.filter(r => {
+    if (filters.obj !== 'all' && r.src_object !== filters.obj) return false;
+    if (filters.sys !== 'all' && r.tgt_system !== filters.sys) return false;
+    if (filters.tobj !== 'all' && r.tgt_object.toLowerCase() !== filters.tobj.toLowerCase()) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      return [r.src_label, r.src_api, r.tgt_field, r.tgt_object, r.notes, r.src_type]
+        .some(v => v && v.toLowerCase().includes(q));
+    }
+    return true;
+  });
+}
+
+function sorted(arr) {
+  if (!sortCol) return arr;
+  return [...arr].sort((a,b) => {
+    const av = (a[sortCol]||'').toLowerCase(), bv = (b[sortCol]||'').toLowerCase();
+    return av < bv ? -sortDir : av > bv ? sortDir : 0;
+  });
+}
+
+function typeClass(t) {
+  if (!t) return '';
+  if (t==='string') return 'string';
+  if (t==='number') return 'number';
+  if (t==='date') return 'date';
+  if (t==='datetime') return 'datetime';
+  if (t==='enumeration') return 'enum';
+  return '';
+}
+function typeLabel(t) {
+  if (!t) return '';
+  if (t==='enumeration') return 'enum';
+  return t;
+}
+function objClass(o) { return o.toLowerCase(); }
+function sysClass(s) { return s.toLowerCase(); }
+function tobjClass(o) {
+  if (o==='Contract') return 'contract';
+  if (o==='Project') return filters.sys==='Ruddr' || filters.sys==='all' ? 'project' : 'project';
+  if (o==='contract line') return 'cline';
+  return 'project';
+}
+function tobjClassFromRow(r) {
+  if (r.tgt_system==='Ruddr') return 'rproject';
+  if (r.tgt_object==='Contract') return 'contract';
+  if (r.tgt_object==='contract line') return 'cline';
+  return 'project';
+}
+function tobjLabel(o) {
+  if (o==='contract line') return 'Contract Line';
+  return o;
+}
+
+function render() {
+  const rows = sorted(filtered());
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+  document.getElementById('resultCount').textContent = rows.length;
+
+  if (rows.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  let html = '';
+  rows.forEach((r, i) => {
+    const id = `row-${i}`;
+    const isExp = expandedRows.has(id);
+    const isEmpty = !r.tgt_field || r.tgt_field === '—';
+    html += `<tr class="${isExp ? 'expanded' : ''}" data-id="${id}" onclick="toggleExpand('${id}')">
+      <td><span class="obj-badge ${objClass(r.src_object)}">${r.src_object}</span></td>
+      <td><div class="src-label">${esc(r.src_label)}</div></td>
+      <td><div class="src-api">${esc(r.src_api)}</div></td>
+      <td>${r.src_type ? `<span class="type-badge ${typeClass(r.src_type)}">${typeLabel(r.src_type)}</span>` : ''}</td>
+      <td class="col-arrow"><span class="arrow-icon">→</span></td>
+      <td><span class="sys-badge ${sysClass(r.tgt_system)}">${r.tgt_system}</span></td>
+      <td><span class="tobj-badge ${tobjClassFromRow(r)}">${tobjLabel(r.tgt_object)}</span></td>
+      <td><span class="tgt-field${isEmpty?' empty':''}">${esc(r.tgt_field)}</span></td>
+      <td><span class="expand-btn">${isExp ? '−' : '+'}</span></td>
+    </tr>`;
+    if (isExp) {
+      html += `<tr class="notes-row" data-notesfor="${id}">
+        <td colspan="9" class="notes-cell">
+          <div class="notes-inner${!r.notes?' empty':''}">
+            ${r.notes ? esc(r.notes) : 'No implementation notes recorded.'}
+          </div>
+        </td>
+      </tr>`;
+    }
+  });
+  tbody.innerHTML = html;
+}
+
+function esc(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toggleExpand(id) {
+  if (expandedRows.has(id)) expandedRows.delete(id);
+  else expandedRows.add(id);
+  render();
+}
+
+// ── FILTERS ──────────────────────────────────────────────────────────────
+document.querySelectorAll('.pill[data-group]').forEach(el => {
+  el.addEventListener('click', () => {
+    const grp = el.dataset.group, val = el.dataset.val;
+    filters[grp] = val;
+    document.querySelectorAll(`.pill[data-group="${grp}"]`).forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    expandedRows.clear();
+    render();
+  });
+});
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  search = e.target.value.trim();
+  expandedRows.clear();
+  render();
+});
+
+// ── SORT ──────────────────────────────────────────────────────────────
+document.querySelectorAll('thead th[data-col]').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll('thead th').forEach(t => t.classList.remove('sorted'));
+    th.classList.add('sorted');
+    const icon = th.querySelector('.sort-icon');
+    if (icon) icon.textContent = sortDir === 1 ? '↑' : '↓';
+    render();
+  });
+});
+
+syncPills();
+render();
+</script>
+</body>
+</html>
