@@ -237,7 +237,7 @@ tbody tr.expanded .expand-btn { background:rgba(230,15,101,0.15); border-color:r
       <div class="page-title">Integration Mapping Explorer</div>
       <div class="page-sub">Browse every automated field mapping across HubSpot → Intacct &amp; Ruddr</div>
     </div>
-    <a href="integration_architecture.html" class="back-link">
+    <a href="index.html" class="back-link">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
         <path d="M8 2L4 6L8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
@@ -334,7 +334,7 @@ const DATA = [{"src_object":"Company","src_label":"Company name","src_api":"name
   // Build breadcrumb if any param is set
   if (sys || obj || tobj) {
     const crumb = document.getElementById('filterCrumb');
-    let parts = `<a href="integration_architecture.html">← Architecture Overview</a>`;
+    let parts = `<a href="index.html">← Architecture Overview</a>`;
     parts += `<span class="crumb-sep">/</span> Filtered by:`;
     if (obj)  parts += ` <span class="crumb-tag obj">${obj}</span>`;
     if (sys) {
