@@ -1,1 +1,298 @@
-see_next_call
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Integration Mapping Explorer - Beghou Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#020434;--pink:#E60F65;--cyan:#00C8FF;--gold:#F5B700;--green:#00C851;--purple:#8B5CF6;--orange:#F97316;--white:#FFFFFF;--muted:rgba(237,240,250,0.42);--border:rgba(255,255,255,0.08);--row-hover:rgba(255,255,255,0.032)}
+html,body{min-height:100%;background:var(--navy);color:var(--white);font-family:"DM Sans",sans-serif}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 55% 55% at 8% 50%,rgba(230,15,101,0.09) 0%,transparent 70%),radial-gradient(ellipse 40% 45% at 92% 12%,rgba(0,200,255,0.08) 0%,transparent 60%)}
+.shell{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:36px 32px 64px}
+.page-header{margin-bottom:26px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.eyebrow{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--pink);font-weight:600;margin-bottom:10px}
+.page-title{font-family:"Syne",sans-serif;font-size:clamp(22px,3vw,32px);font-weight:800;letter-spacing:-0.02em}
+.page-sub{font-size:13px;font-weight:300;color:var(--muted);margin-top:6px}
+.back-link{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:8px 14px;transition:all 0.2s;white-space:nowrap;align-self:center}
+.back-link:hover{color:var(--white);border-color:rgba(255,255,255,0.22)}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;align-items:center}
+.search-wrap{position:relative;flex:1;min-width:200px;max-width:300px}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none}
+#searchInput{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:9px 12px 9px 36px;font-family:"DM Sans",sans-serif;font-size:13px;color:var(--white);outline:none;transition:border-color 0.2s}
+#searchInput::placeholder{color:var(--muted)}
+#searchInput:focus{border-color:rgba(230,15,101,0.4)}
+.filter-group{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.filter-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.pill{display:inline-flex;align-items:center;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all 0.16s;user-select:none}
+.pn{background:rgba(255,255,255,0.05);border-color:var(--border);color:var(--muted)}
+.pn.active,.pn:hover{background:rgba(255,255,255,0.11);border-color:rgba(255,255,255,0.24);color:var(--white)}
+.pp{background:rgba(230,15,101,0.08);border-color:rgba(230,15,101,0.18);color:rgba(230,15,101,0.75)}
+.pp.active{background:rgba(230,15,101,0.2);border-color:rgba(230,15,101,0.5);color:var(--pink)}
+.pc{background:rgba(0,200,255,0.07);border-color:rgba(0,200,255,0.17);color:rgba(0,200,255,0.75)}
+.pc.active{background:rgba(0,200,255,0.18);border-color:rgba(0,200,255,0.5);color:var(--cyan)}
+.pg{background:rgba(245,183,0,0.07);border-color:rgba(245,183,0,0.17);color:rgba(245,183,0,0.75)}
+.pg.active{background:rgba(245,183,0,0.18);border-color:rgba(245,183,0,0.5);color:var(--gold)}
+.pge{background:rgba(0,200,81,0.07);border-color:rgba(0,200,81,0.17);color:rgba(0,200,81,0.75)}
+.pge.active{background:rgba(0,200,81,0.18);border-color:rgba(0,200,81,0.5);color:var(--green)}
+.pu{background:rgba(139,92,246,0.07);border-color:rgba(139,92,246,0.17);color:rgba(139,92,246,0.8)}
+.pu.active{background:rgba(139,92,246,0.18);border-color:rgba(139,92,246,0.5);color:var(--purple)}
+.po{background:rgba(249,115,22,0.07);border-color:rgba(249,115,22,0.17);color:rgba(249,115,22,0.8)}
+.po.active{background:rgba(249,115,22,0.18);border-color:rgba(249,115,22,0.5);color:var(--orange)}
+.result-bar{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.rc{font-family:"Syne",sans-serif;font-size:13px;font-weight:700}
+.vdivider{width:1px;height:14px;background:var(--border)}
+.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:rgba(255,255,255,0.03);padding:10px 13px;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
+thead th:hover{color:var(--white)}
+.si{margin-left:4px;opacity:0.4;font-size:10px}
+thead th.sorted .si{opacity:1;color:var(--pink)}
+tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--row-hover)}
+tbody tr.expanded{background:rgba(255,255,255,0.03)}
+tbody tr.drow{background:rgba(0,0,0,0.14);cursor:default}
+tbody tr.drow:hover{background:rgba(0,0,0,0.18)}
+td{padding:9px 13px;vertical-align:middle}
+.zb{display:inline-flex;align-items:center;font-size:10px;font-weight:600;letter-spacing:0.06em;padding:3px 9px;border-radius:10px;white-space:nowrap}
+.z0{background:rgba(230,15,101,0.13);color:#ff5fa0}
+.z1{background:rgba(0,200,255,0.12);color:var(--cyan)}
+.z2{background:rgba(245,183,0,0.12);color:var(--gold)}
+.z3{background:rgba(0,200,81,0.12);color:var(--green)}
+.z4{background:rgba(139,92,246,0.12);color:var(--purple)}
+.z5{background:rgba(249,115,22,0.12);color:var(--orange)}
+.z6{background:rgba(255,255,255,0.08);color:rgba(237,240,250,0.7)}
+.z7{background:rgba(236,72,153,0.12);color:#f472b6}
+.stb{display:inline-flex;align-items:center;font-size:10px;font-weight:600;letter-spacing:0.07em;padding:3px 8px;border-radius:7px;white-space:nowrap}
+.tt{background:rgba(230,15,101,0.13);color:var(--pink);border:1px solid rgba(230,15,101,0.2)}
+.tr{background:rgba(0,200,255,0.1);color:var(--cyan);border:1px solid rgba(0,200,255,0.18)}
+.tw{background:rgba(0,200,81,0.1);color:var(--green);border:1px solid rgba(0,200,81,0.18)}
+.tx{background:rgba(139,92,246,0.1);color:var(--purple);border:1px solid rgba(139,92,246,0.18)}
+.tc{background:rgba(245,183,0,0.1);color:var(--gold);border:1px solid rgba(245,183,0,0.18)}
+.tu{background:rgba(255,255,255,0.06);color:rgba(237,240,250,0.55);border:1px solid var(--border)}
+.tre{background:rgba(249,115,22,0.1);color:var(--orange);border:1px solid rgba(249,115,22,0.18)}
+.atxt{font-size:11px;color:rgba(237,240,250,0.55)}
+.fm{font-family:"DM Mono",monospace;font-size:11px;color:rgba(237,240,250,0.75)}
+.fe{color:rgba(255,255,255,0.2);font-style:italic}
+.dchip{font-family:"DM Mono",monospace;font-size:10px;padding:2px 7px;border-radius:5px;background:rgba(255,255,255,0.06);color:rgba(237,240,250,0.45);border:1px solid var(--border)}
+.exb{width:22px;height:22px;border-radius:5px;border:1px solid var(--border);background:rgba(255,255,255,0.03);display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);transition:all 0.14s}
+tbody tr:hover .exb{border-color:rgba(255,255,255,0.2);color:var(--white)}
+tbody tr.expanded .exb{background:rgba(230,15,101,0.15);border-color:rgba(230,15,101,0.3);color:var(--pink)}
+.dcell{padding:0 13px 0 46px}
+.dinner{padding:12px 16px;margin:8px 0 12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid rgba(230,15,101,0.3);display:grid;grid-template-columns:1fr 1fr;gap:12px 24px}
+.dk{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(237,240,250,0.35);font-weight:600;margin-bottom:3px}
+.dv{font-size:12px;color:rgba(237,240,250,0.7);line-height:1.55}
+.dvm{font-family:"DM Mono",monospace;font-size:11px;color:rgba(237,240,250,0.7)}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+.footer{margin-top:36px;text-align:center;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(237,240,250,0.16)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.shell{animation:fadeUp 0.5s ease both}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="page-header">
+    <div>
+      <div class="eyebrow">Beghou Consulting &middot; Automation Architecture</div>
+      <div class="page-title">Integration Mapping Explorer</div>
+      <div class="page-sub">78 production Zap steps across 8 automated workflows &mdash; HubSpot &rarr; Intacct &amp; Ruddr</div>
+    </div>
+    <a href="index.html" class="back-link">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6L8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Architecture Overview
+    </a>
+  </div>
+  <div class="controls">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <circle cx="6" cy="6" r="4.5" stroke="rgba(237,240,250,0.4)" stroke-width="1.2"/>
+        <line x1="9.5" y1="9.5" x2="13" y2="13" stroke="rgba(237,240,250,0.4)" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <input id="searchInput" type="text" placeholder="Search steps, fields, apps, purpose...">
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Zap</span>
+      <span class="pill pn active" data-group="zap" data-val="all">All</span>
+      <span class="pill pp" data-group="zap" data-val="z0">Deal &rarr; Intacct</span>
+      <span class="pill pc" data-group="zap" data-val="z1">Ruddr Projects</span>
+      <span class="pill pg" data-group="zap" data-val="z2">Get Line Items</span>
+      <span class="pill pge" data-group="zap" data-val="z3">Intacct Tasks</span>
+      <span class="pill pu" data-group="zap" data-val="z4">Intacct Customer</span>
+      <span class="pill po" data-group="zap" data-val="z5">Ruddr Client</span>
+      <span class="pill pn" data-group="zap" data-val="z6">Contact Intacct</span>
+      <span class="pill pp" data-group="zap" data-val="z7">Contract + Lines</span>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Step Type</span>
+      <span class="pill pn active" data-group="type" data-val="all">All</span>
+      <span class="pill pp" data-group="type" data-val="trigger">Trigger</span>
+      <span class="pill pc" data-group="type" data-val="read">Read</span>
+      <span class="pill pge" data-group="type" data-val="write">Write</span>
+      <span class="pill pu" data-group="type" data-val="transform">Transform</span>
+      <span class="pill pg" data-group="type" data-val="conditional">Conditional</span>
+      <span class="pill po" data-group="type" data-val="utility">Utility</span>
+      <span class="pill po" data-group="type" data-val="return">Return</span>
+    </div>
+  </div>
+  <div class="result-bar">
+    <span class="rc" id="rc">78</span>
+    <span style="font-size:12px;color:var(--muted)">of 78 steps</span>
+    <div class="vdivider"></div>
+    <span style="font-size:11px;color:var(--muted)">Click any row to expand details</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th data-col="zap_idx">Zap <span class="si">&#x2195;</span></th>
+          <th data-col="step_num" style="width:58px">Step <span class="si">&#x2195;</span></th>
+          <th data-col="step_name">Step Name <span class="si">&#x2195;</span></th>
+          <th data-col="app">App / Service <span class="si">&#x2195;</span></th>
+          <th data-col="type_group">Type <span class="si">&#x2195;</span></th>
+          <th data-col="source">Source Field(s) <span class="si">&#x2195;</span></th>
+          <th data-col="destination">Destination <span class="si">&#x2195;</span></th>
+          <th data-col="data_type" style="width:100px">Data Type <span class="si">&#x2195;</span></th>
+          <th style="width:28px"></th>
+        </tr>
+      </thead>
+      <tbody id="tb"></tbody>
+    </table>
+    <div id="es" class="empty-state" style="display:none">
+      <p style="font-size:28px;margin-bottom:12px">&#x1F50D;</p>
+      <p>No steps match your filters.</p>
+    </div>
+  </div>
+  <div class="footer">Beghou Consulting &middot; Commercial Operations Architecture &middot; Confidential</div>
+</div>
+<script>
+var DATA = [{"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "1", "step_name": "Deal Property Change", "app": "HubSpot", "step_type": "Trigger", "type_group": "trigger", "source": "deal_id / property_name", "transform": "Webhook (Property Change)", "destination": "--", "data_type": "Event", "purpose": "Monitor HubSpot deal property changes", "zap_idx": "z0"}, {"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "2", "step_name": "Filter - Deal Stage", "app": "Filter by Zapier", "step_type": "Conditional", "type_group": "conditional", "source": "dealstage", "transform": "Check dealstage value", "destination": "Continue/Stop", "data_type": "Conditional Logic", "purpose": "Validate deal is at correct stage", "zap_idx": "z0"}, {"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "3", "step_name": "Filter - Closing Date", "app": "Filter by Zapier", "step_type": "Conditional", "type_group": "conditional", "source": "hs_deal_close_date", "transform": "Check date exists", "destination": "Continue/Stop", "data_type": "Conditional Logic", "purpose": "Ensure closing date is populated", "zap_idx": "z0"}, {"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "4", "step_name": "Start Time Format", "app": "Formatter by Zapier", "step_type": "Transform", "type_group": "transform", "source": "hs_deal_start_date", "transform": "Convert to ISO 8601 datetime", "destination": "formatted_start_date", "data_type": "DateTime", "purpose": "Standardize date format for Intacct", "zap_idx": "z0"}, {"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "5", "step_name": "End Time Format", "app": "Formatter by Zapier", "step_type": "Transform", "type_group": "transform", "source": "hs_deal_close_date", "transform": "Convert to ISO 8601 datetime", "destination": "formatted_end_date", "data_type": "DateTime", "purpose": "Standardize date format for Intacct", "zap_idx": "z0"}, {"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "6", "step_name": "GET Associated Line Items", "app": "HubSpot API", "step_type": "Read", "type_group": "read", "source": "deal_id", "transform": "Raw API request to /crm/v3/objects/deals/{id}", "destination": "line_items[]", "data_type": "Array", "purpose": "Fetch all line items linked to deal", "zap_idx": "z0"}, {"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "7", "step_name": "GET Associated Contact", "app": "HubSpot API", "step_type": "Read", "type_group": "read", "source": "deal_id", "transform": "Raw API request to /crm/v3/objects/deals/{id}/associations", "destination": "associated_contacts[]", "data_type": "Array", "purpose": "Fetch primary contact associated with deal", "zap_idx": "z0"}, {"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "8", "step_name": "Select First Contact", "app": "Formatter by Zapier", "step_type": "Extract", "type_group": "transform", "source": "associated_contacts[]", "transform": "Array index [0]", "destination": "primary_contact_id", "data_type": "String", "purpose": "Extract first contact from array", "zap_idx": "z0"}, {"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "9", "step_name": "Get Contact Details", "app": "HubSpot", "step_type": "Read", "type_group": "read", "source": "primary_contact_id", "transform": "GET /crm/v3/objects/contacts/{id}", "destination": "contact_details{}", "data_type": "Object", "purpose": "Retrieve full contact record", "zap_idx": "z0"}, {"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "10", "step_name": "Get Line Items", "app": "Sub-Zap", "step_type": "Call", "type_group": "utility", "source": "deal_id", "transform": "Call sub-zap: Get Line Items", "destination": "line_items_data{}", "data_type": "Object", "purpose": "Execute line item extraction sub-zap", "zap_idx": "z0"}, {"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "11", "step_name": "Get Company", "app": "HubSpot", "step_type": "Read", "type_group": "read", "source": "associated_company_id", "transform": "GET /crm/v3/objects/companies/{id}", "destination": "company_details{}", "data_type": "Object", "purpose": "Retrieve company/account information", "zap_idx": "z0"}, {"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "12", "step_name": "Create Ruddr Client", "app": "Sub-Zap", "step_type": "Call", "type_group": "utility", "source": "company_name / company_id", "transform": "Call sub-zap: Find/Create Ruddr Client", "destination": "ruddr_client_id", "data_type": "String", "purpose": "Create or locate client in Ruddr", "zap_idx": "z0"}, {"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "13", "step_name": "Create Ruddr Projects", "app": "Sub-Zap", "step_type": "Call", "type_group": "utility", "source": "deal_id / line_items_data", "transform": "Call sub-zap: Create Ruddr Projects", "destination": "ruddr_project_ids[]", "data_type": "Array", "purpose": "Create projects in Ruddr per line items", "zap_idx": "z0"}, {"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "14", "step_name": "Filter - Customer Check", "app": "Filter by Zapier", "step_type": "Conditional", "type_group": "conditional", "source": "customer_record_exists", "transform": "Check if Intacct customer found", "destination": "Continue/Stop", "data_type": "Conditional Logic", "purpose": "Validate customer exists before contract creation", "zap_idx": "z0"}, {"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "15", "step_name": "Find/Create Customer", "app": "Sub-Zap", "step_type": "Call", "type_group": "utility", "source": "company_name / company_id", "transform": "Call sub-zap: Find/Create Intacct Customer", "destination": "intacct_customer_id", "data_type": "String", "purpose": "Locate or create customer in Intacct", "zap_idx": "z0"}, {"zap_name": "[Production] - Hubspot Deal Data -> Intacct Contracts", "zap_short": "Deal \u2192 Intacct Contracts", "zap_id": "338100092", "step_num": "16", "step_name": "Create Contract + Lines", "app": "Sub-Zap", "step_type": "Call", "type_group": "utility", "source": "deal_data / line_items / customer_id", "transform": "Call sub-zap: Create Intacct Contract", "destination": "intacct_contract_id", "data_type": "String", "purpose": "Create contract and line items in Intacct", "zap_idx": "z0"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "1", "step_name": "Start Sub-Zap", "app": "Sub-Zap", "step_type": "Trigger", "type_group": "trigger", "source": "--", "transform": "Sub-Zap entry point", "destination": "--", "data_type": "Event", "purpose": "Initialize sub-zap workflow", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "2", "step_name": "Line Item Data to List", "app": "Code by Zapier", "step_type": "Transform", "type_group": "transform", "source": "line_items[]", "transform": "JavaScript to build array structure", "destination": "formatted_items[]", "data_type": "Array", "purpose": "Parse and structure line item data", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "3", "step_name": "Get Deal Details", "app": "HubSpot", "step_type": "Read", "type_group": "read", "source": "deal_id", "transform": "GET /crm/v3/objects/deals/{id}", "destination": "deal_details{}", "data_type": "Object", "purpose": "Retrieve full deal record", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "4", "step_name": "Get Deal Owner", "app": "HubSpot", "step_type": "Read", "type_group": "read", "source": "dealowner_id", "transform": "GET /crm/v3/objects/owners/{id}", "destination": "owner_details{}", "data_type": "Object", "purpose": "Fetch deal owner information", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "5", "step_name": "Search Ruddr Member", "app": "Ruddr", "step_type": "Read", "type_group": "read", "source": "owner_email", "transform": "Search members by email", "destination": "ruddr_member_id", "data_type": "String", "purpose": "Match HubSpot owner to Ruddr member", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "6", "step_name": "Parallel Paths - Billing Logic", "app": "Branching", "step_type": "Route", "type_group": "conditional", "source": "billing_type", "transform": "Route based on line item billing", "destination": "multiple paths", "data_type": "Conditional", "purpose": "Determine billable vs non-billable paths", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "6a", "step_name": "Loop Line Items", "app": "Looping by Zapier", "step_type": "Loop", "type_group": "conditional", "source": "line_items[]", "transform": "Iterate each item in array", "destination": "item (current)", "data_type": "Object", "purpose": "Process each line item individually", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "6b", "step_name": "Calculate End Date", "app": "Code by Zapier", "step_type": "Calculate", "type_group": "transform", "source": "start_date + duration", "transform": "JavaScript date math", "destination": "calculated_end_date", "data_type": "DateTime", "purpose": "Compute project end date", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "6c", "step_name": "Billing Type Map", "app": "Code by Zapier", "step_type": "Map", "type_group": "transform", "source": "hs_line_item_type", "transform": "Map to Ruddr billing categories", "destination": "ruddr_billing_category", "data_type": "String", "purpose": "Transform HubSpot billing type to Ruddr equivalent", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "6d", "step_name": "Filter - Valid Items", "app": "Filter by Zapier", "step_type": "Conditional", "type_group": "conditional", "source": "item_price AND duration", "transform": "Check required fields present", "destination": "Continue/Skip", "data_type": "Conditional Logic", "purpose": "Skip items missing critical data", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "6e", "step_name": "Delay Queue", "app": "Delay by Zapier", "step_type": "Wait", "type_group": "utility", "source": "--", "transform": "Wait in task queue", "destination": "--", "data_type": "Delay", "purpose": "Rate limiting for API calls", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "6f", "step_name": "Get Line Item Details", "app": "HubSpot", "step_type": "Read", "type_group": "read", "source": "line_item_id", "transform": "GET /crm/v3/objects/line_items/{id}", "destination": "item_details{}", "data_type": "Object", "purpose": "Fetch line item record", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "6g", "step_name": "Filter - Create Project", "app": "Filter by Zapier", "step_type": "Conditional", "type_group": "conditional", "source": "billing_type == 'billable'", "transform": "Check billable status", "destination": "Continue/Stop", "data_type": "Conditional Logic", "purpose": "Route to project creation", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "6h", "step_name": "Create Project - Ruddr", "app": "Ruddr", "step_type": "Write", "type_group": "write", "source": "deal_name + item_description", "transform": "POST /projects", "destination": "ruddr_project_id", "data_type": "String", "purpose": "Create project in Ruddr", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "6i", "step_name": "Update Line Item - Tracking", "app": "HubSpot", "step_type": "Write", "type_group": "write", "source": "line_item_id + ruddr_project_id", "transform": "PATCH line item with project ref", "destination": "--", "data_type": "String", "purpose": "Store Ruddr project ID in HubSpot", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "6j", "step_name": "Prepare Task Data", "app": "Code by Zapier", "step_type": "Transform", "type_group": "transform", "source": "item_details + project_id", "transform": "JavaScript to format task payload", "destination": "task_payload{}", "data_type": "Object", "purpose": "Structure data for task creation", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "6k", "step_name": "Parallel - Task Types", "app": "Branching", "step_type": "Route", "type_group": "conditional", "source": "billing_type", "transform": "Route per task category", "destination": "multiple paths", "data_type": "Conditional", "purpose": "Create billable/non-billable tasks", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "6k-i", "step_name": "Create Multiple Tasks (Billable)", "app": "Ruddr", "step_type": "Write", "type_group": "write", "source": "task_payload[]", "transform": "POST /projects/{id}/tasks (batch)", "destination": "task_ids[]", "data_type": "Array", "purpose": "Create billable tasks in Ruddr", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "6k-ii", "step_name": "Filter - Allocation Check", "app": "Filter by Zapier", "step_type": "Conditional", "type_group": "conditional", "source": "allocation_item == true", "transform": "Check if allocation record needed", "destination": "Continue/Stop", "data_type": "Conditional Logic", "purpose": "Determine if allocation line item needed", "zap_idx": "z1"}, {"zap_name": "[Production] Create Ruddr Projects", "zap_short": "Create Ruddr Projects", "zap_id": "338101103", "step_num": "6k-ii-a", "step_name": "Create Allocation Line Item", "app": "Sub-Zap", "step_type": "Call", "type_group": "utility", "source": "task_id + task_type", "transform": "Call sub-zap: Find/Create Allocation", "destination": "allocation_id", "data_type": "String", "purpose": "Create resource allocation record", "zap_idx": "z1"}, {"zap_name": "[Production] - Get Line Items", "zap_short": "Get Line Items", "zap_id": "338100244", "step_num": "1", "step_name": "Start Sub-Zap", "app": "Sub-Zap", "step_type": "Trigger", "type_group": "trigger", "source": "--", "transform": "Sub-Zap entry point", "destination": "--", "data_type": "Event", "purpose": "Initialize sub-zap for line item retrieval", "zap_idx": "z2"}, {"zap_name": "[Production] - Get Line Items", "zap_short": "Get Line Items", "zap_id": "338100244", "step_num": "2", "step_name": "API Request - Line Items", "app": "HubSpot API", "step_type": "Read", "type_group": "read", "source": "deal_id", "transform": "Raw API request to /crm/v3/objects/deals/{id}", "destination": "response_data{}", "data_type": "Object", "purpose": "Fetch raw API response", "zap_idx": "z2"}, {"zap_name": "[Production] - Get Line Items", "zap_short": "Get Line Items", "zap_id": "338100244", "step_num": "3", "step_name": "Parse Response", "app": "Code by Zapier", "step_type": "Transform", "type_group": "transform", "source": "response_data", "transform": "JavaScript JSON parsing", "destination": "parsed_items[]", "data_type": "Array", "purpose": "Extract line items from response", "zap_idx": "z2"}, {"zap_name": "[Production] - Get Line Items", "zap_short": "Get Line Items", "zap_id": "338100244", "step_num": "4", "step_name": "Return From Sub-Zap", "app": "Sub-Zap", "step_type": "Return", "type_group": "return", "source": "parsed_items[]", "transform": "Return to calling Zap", "destination": "line_items_data[]", "data_type": "Array", "purpose": "Pass data back to parent Zap", "zap_idx": "z2"}, {"zap_name": "[Production] Create Intacct Billable Project Tasks", "zap_short": "Intacct Billable Tasks", "zap_id": "338100529", "step_num": "1", "step_name": "Start Sub-Zap", "app": "Sub-Zap", "step_type": "Trigger", "type_group": "trigger", "source": "--", "transform": "Sub-Zap entry point", "destination": "--", "data_type": "Event", "purpose": "Initialize billable task creation", "zap_idx": "z3"}, {"zap_name": "[Production] Create Intacct Billable Project Tasks", "zap_short": "Intacct Billable Tasks", "zap_id": "338100529", "step_num": "2", "step_name": "Create Multiple Tasks", "app": "Intacct", "step_type": "Write", "type_group": "write", "source": "task_payload[] x N", "transform": "POST /ia/xml/xmlgw.phtml (bulk)", "destination": "task_ids[]", "data_type": "Array", "purpose": "Batch create billable tasks", "zap_idx": "z3"}, {"zap_name": "[Production] Create Intacct Billable Project Tasks", "zap_short": "Intacct Billable Tasks", "zap_id": "338100529", "step_num": "3", "step_name": "Create Multiple Tasks (Set 2)", "app": "Intacct", "step_type": "Write", "type_group": "write", "source": "additional_tasks[]", "transform": "POST /ia/xml/xmlgw.phtml", "destination": "more_task_ids[]", "data_type": "Array", "purpose": "Create secondary task batch", "zap_idx": "z3"}, {"zap_name": "[Production] Create Intacct Billable Project Tasks", "zap_short": "Intacct Billable Tasks", "zap_id": "338100529", "step_num": "4", "step_name": "Create Multiple Tasks (Set 3)", "app": "Intacct", "step_type": "Write", "type_group": "write", "source": "remaining_tasks[]", "transform": "POST /ia/xml/xmlgw.phtml", "destination": "final_task_ids[]", "data_type": "Array", "purpose": "Create tertiary task batch", "zap_idx": "z3"}, {"zap_name": "[Production] Create Intacct Billable Project Tasks", "zap_short": "Intacct Billable Tasks", "zap_id": "338100529", "step_num": "5", "step_name": "Return From Sub-Zap", "app": "Sub-Zap", "step_type": "Return", "type_group": "return", "source": "task_ids[]", "transform": "Return combined task results", "destination": "--", "data_type": "Array", "purpose": "Return all created task IDs", "zap_idx": "z3"}, {"zap_name": "[Production] - Find/Create Intacct Customer", "zap_short": "Find/Create Intacct Customer", "zap_id": "338100576", "step_num": "1", "step_name": "Start Sub-Zap", "app": "Sub-Zap", "step_type": "Trigger", "type_group": "trigger", "source": "--", "transform": "Sub-Zap entry point", "destination": "--", "data_type": "Event", "purpose": "Initialize customer lookup/creation", "zap_idx": "z4"}, {"zap_name": "[Production] - Find/Create Intacct Customer", "zap_short": "Find/Create Intacct Customer", "zap_id": "338100576", "step_num": "2", "step_name": "Get Company", "app": "HubSpot", "step_type": "Read", "type_group": "read", "source": "company_id", "transform": "GET /crm/v3/objects/companies/{id}", "destination": "company_data{}", "data_type": "Object", "purpose": "Retrieve HubSpot company details", "zap_idx": "z4"}, {"zap_name": "[Production] - Find/Create Intacct Customer", "zap_short": "Find/Create Intacct Customer", "zap_id": "338100576", "step_num": "3", "step_name": "Find Customer", "app": "Intacct", "step_type": "Search", "type_group": "read", "source": "company_name", "transform": "Search /customers by name", "destination": "intacct_customer[]", "data_type": "Array", "purpose": "Search for existing customer", "zap_idx": "z4"}, {"zap_name": "[Production] - Find/Create Intacct Customer", "zap_short": "Find/Create Intacct Customer", "zap_id": "338100576", "step_num": "4", "step_name": "Parallel - Customer Status", "app": "Branching", "step_type": "Route", "type_group": "conditional", "source": "customer_found", "transform": "Route based on search result", "destination": "found/not_found", "data_type": "Conditional", "purpose": "Branch to create or return", "zap_idx": "z4"}, {"zap_name": "[Production] - Find/Create Intacct Customer", "zap_short": "Find/Create Intacct Customer", "zap_id": "338100576", "step_num": "4a", "step_name": "Customer Found - Return", "app": "Filter", "step_type": "customer_found == true", "type_group": "conditional", "source": "Return existing customer", "transform": "intacct_customer_id", "destination": "String", "data_type": "Return found customer ID", "purpose": "", "zap_idx": "z4"}, {"zap_name": "[Production] - Find/Create Intacct Customer", "zap_short": "Find/Create Intacct Customer", "zap_id": "338100576", "step_num": "4b", "step_name": "Create Customer (Simple)", "app": "Intacct", "step_type": "Write", "type_group": "write", "source": "company_name + company_address", "transform": "POST /customers", "destination": "intacct_customer_id", "data_type": "String", "purpose": "Create new customer record", "zap_idx": "z4"}, {"zap_name": "[Production] - Find/Create Intacct Customer", "zap_short": "Find/Create Intacct Customer", "zap_id": "338100576", "step_num": "4b-return", "step_name": "Return From Sub-Zap", "app": "Sub-Zap", "step_type": "Return", "type_group": "return", "source": "intacct_customer_id", "transform": "Return newly created customer ID", "destination": "--", "data_type": "String", "purpose": "Pass customer ID to parent", "zap_idx": "z4"}, {"zap_name": "[Production] - Find/Create Intacct Customer", "zap_short": "Find/Create Intacct Customer", "zap_id": "338100576", "step_num": "4c", "step_name": "Not Found - Return", "app": "Filter", "step_type": "customer_found == false", "type_group": "conditional", "source": "No customer found branch", "transform": "intacct_customer_id", "destination": "String", "data_type": "Return fallback value", "purpose": "", "zap_idx": "z4"}, {"zap_name": "[Production] - Find/Create Intacct Customer", "zap_short": "Find/Create Intacct Customer", "zap_id": "338100576", "step_num": "4c-return", "step_name": "Return From Sub-Zap", "app": "Sub-Zap", "step_type": "Return", "type_group": "return", "source": "--", "transform": "Return without customer", "destination": "--", "data_type": "Null", "purpose": "Continue without customer", "zap_idx": "z4"}, {"zap_name": "[Production] - Find/Create Ruddr Client", "zap_short": "Find/Create Ruddr Client", "zap_id": "338100600", "step_num": "1", "step_name": "Start Sub-Zap", "app": "Sub-Zap", "step_type": "Trigger", "type_group": "trigger", "source": "--", "transform": "Sub-Zap entry point", "destination": "--", "data_type": "Event", "purpose": "Initialize Ruddr client lookup", "zap_idx": "z5"}, {"zap_name": "[Production] - Find/Create Ruddr Client", "zap_short": "Find/Create Ruddr Client", "zap_id": "338100600", "step_num": "2", "step_name": "Get Owner by ID", "app": "HubSpot", "step_type": "Read", "type_group": "read", "source": "owner_id", "transform": "GET /crm/v3/objects/owners/{id}", "destination": "owner_data{}", "data_type": "Object", "purpose": "Retrieve owner details", "zap_idx": "z5"}, {"zap_name": "[Production] - Find/Create Ruddr Client", "zap_short": "Find/Create Ruddr Client", "zap_id": "338100600", "step_num": "3", "step_name": "Search Ruddr Member", "app": "Ruddr", "step_type": "Search", "type_group": "read", "source": "owner_email", "transform": "Search /members by email", "destination": "ruddr_member[]", "data_type": "Array", "purpose": "Match owner to Ruddr member", "zap_idx": "z5"}, {"zap_name": "[Production] - Find/Create Ruddr Client", "zap_short": "Find/Create Ruddr Client", "zap_id": "338100600", "step_num": "4", "step_name": "Search Ruddr Client", "app": "Ruddr", "step_type": "Search", "type_group": "read", "source": "company_name", "transform": "Search /clients by name", "destination": "ruddr_client[]", "data_type": "Array", "purpose": "Find existing client in Ruddr", "zap_idx": "z5"}, {"zap_name": "[Production] - Find/Create Ruddr Client", "zap_short": "Find/Create Ruddr Client", "zap_id": "338100600", "step_num": "5", "step_name": "Parallel - Client Exists", "app": "Branching", "step_type": "Route", "type_group": "conditional", "source": "client_found", "transform": "Route based on client status", "destination": "found/not_found", "data_type": "Conditional", "purpose": "Branch to create or return", "zap_idx": "z5"}, {"zap_name": "[Production] - Find/Create Ruddr Client", "zap_short": "Find/Create Ruddr Client", "zap_id": "338100600", "step_num": "5a", "step_name": "Client Found - Return", "app": "Filter", "step_type": "client_found == true", "type_group": "conditional", "source": "Client exists", "transform": "ruddr_client_id", "destination": "String", "data_type": "Return existing client", "purpose": "", "zap_idx": "z5"}, {"zap_name": "[Production] - Find/Create Ruddr Client", "zap_short": "Find/Create Ruddr Client", "zap_id": "338100600", "step_num": "5a-create", "step_name": "Create Client", "app": "Ruddr", "step_type": "Write", "type_group": "write", "source": "company_name + contact_email", "transform": "POST /clients", "destination": "ruddr_client_id", "data_type": "String", "purpose": "Create new client record", "zap_idx": "z5"}, {"zap_name": "[Production] - Find/Create Ruddr Client", "zap_short": "Find/Create Ruddr Client", "zap_id": "338100600", "step_num": "5a-return", "step_name": "Return From Sub-Zap", "app": "Sub-Zap", "step_type": "Return", "type_group": "return", "source": "ruddr_client_id", "transform": "Return newly created client", "destination": "--", "data_type": "String", "purpose": "Pass to parent Zap", "zap_idx": "z5"}, {"zap_name": "[Production] - Find/Create Ruddr Client", "zap_short": "Find/Create Ruddr Client", "zap_id": "338100600", "step_num": "5b", "step_name": "Not Found - Return", "app": "Filter", "step_type": "client_found == false", "type_group": "conditional", "source": "Client not found", "transform": "ruddr_client_id", "destination": "String", "data_type": "Fallback return", "purpose": "", "zap_idx": "z5"}, {"zap_name": "[Production] - Find/Create Ruddr Client", "zap_short": "Find/Create Ruddr Client", "zap_id": "338100600", "step_num": "5b-return", "step_name": "Return From Sub-Zap", "app": "Sub-Zap", "step_type": "Return", "type_group": "return", "source": "--", "transform": "Return without client", "destination": "--", "data_type": "Null", "purpose": "Continue empty", "zap_idx": "z5"}, {"zap_name": "[Production] Find/Create Contact Intacct", "zap_short": "Find/Create Contact Intacct", "zap_id": "339330791", "step_num": "1", "step_name": "Start Sub-Zap", "app": "Sub-Zap", "step_type": "Trigger", "type_group": "trigger", "source": "--", "transform": "Sub-Zap entry point", "destination": "--", "data_type": "Event", "purpose": "Initialize Intacct contact lookup", "zap_idx": "z6"}, {"zap_name": "[Production] Find/Create Contact Intacct", "zap_short": "Find/Create Contact Intacct", "zap_id": "339330791", "step_num": "2", "step_name": "Utilities - Line Item", "app": "Formatter by Zapier", "step_type": "Extract", "type_group": "transform", "source": "contact_data", "transform": "Extract nested contact fields", "destination": "contact_fields{}", "data_type": "Object", "purpose": "Parse contact object", "zap_idx": "z6"}, {"zap_name": "[Production] Find/Create Contact Intacct", "zap_short": "Find/Create Contact Intacct", "zap_id": "339330791", "step_num": "3", "step_name": "Get Contact", "app": "HubSpot", "step_type": "Read", "type_group": "read", "source": "contact_id", "transform": "GET /crm/v3/objects/contacts/{id}", "destination": "contact_details{}", "data_type": "Object", "purpose": "Retrieve full contact details", "zap_idx": "z6"}, {"zap_name": "[Production] Find/Create Contact Intacct", "zap_short": "Find/Create Contact Intacct", "zap_id": "339330791", "step_num": "4", "step_name": "Find Contact", "app": "Intacct", "step_type": "Search", "type_group": "read", "source": "email", "transform": "Search /contacts by email", "destination": "intacct_contact[]", "data_type": "Array", "purpose": "Search for contact in Intacct", "zap_idx": "z6"}, {"zap_name": "[Production] Find/Create Contact Intacct", "zap_short": "Find/Create Contact Intacct", "zap_id": "339330791", "step_num": "5", "step_name": "Parallel - Contact Status", "app": "Branching", "step_type": "Route", "type_group": "conditional", "source": "contact_found", "transform": "Route based on search", "destination": "found/not_found", "data_type": "Conditional", "purpose": "Branch logic", "zap_idx": "z6"}, {"zap_name": "[Production] Find/Create Contact Intacct", "zap_short": "Find/Create Contact Intacct", "zap_id": "339330791", "step_num": "5a", "step_name": "Contact Found", "app": "Filter", "step_type": "contact_found == true", "type_group": "conditional", "source": "Contact exists", "transform": "intacct_contact_id", "destination": "String", "data_type": "Return found contact", "purpose": "", "zap_idx": "z6"}, {"zap_name": "[Production] Find/Create Contact Intacct", "zap_short": "Find/Create Contact Intacct", "zap_id": "339330791", "step_num": "5a-return", "step_name": "Return From Sub-Zap", "app": "Sub-Zap", "step_type": "Return", "type_group": "return", "source": "intacct_contact_id", "transform": "Return existing contact", "destination": "--", "data_type": "String", "purpose": "Pass to parent", "zap_idx": "z6"}, {"zap_name": "[Production] Find/Create Contact Intacct", "zap_short": "Find/Create Contact Intacct", "zap_id": "339330791", "step_num": "5b", "step_name": "Not Found - Create", "app": "Filter", "step_type": "contact_found == false", "type_group": "conditional", "source": "Create new contact", "transform": "intacct_contact_id", "destination": "String", "data_type": "Branch to creation", "purpose": "", "zap_idx": "z6"}, {"zap_name": "[Production] Find/Create Contact Intacct", "zap_short": "Find/Create Contact Intacct", "zap_id": "339330791", "step_num": "5b-create", "step_name": "Create Contact", "app": "Intacct", "step_type": "Write", "type_group": "write", "source": "first_name + last_name + email", "transform": "POST /contacts", "destination": "intacct_contact_id", "data_type": "String", "purpose": "Create new contact", "zap_idx": "z6"}, {"zap_name": "[Production] Find/Create Contact Intacct", "zap_short": "Find/Create Contact Intacct", "zap_id": "339330791", "step_num": "5b-return", "step_name": "Return From Sub-Zap", "app": "Sub-Zap", "step_type": "Return", "type_group": "return", "source": "intacct_contact_id", "transform": "Return created contact", "destination": "--", "data_type": "String", "purpose": "Pass to parent", "zap_idx": "z6"}, {"zap_name": "[Production] - Create Intacct Contract + Contract Lines", "zap_short": "Create Intacct Contract + Lines", "zap_id": "339339568", "step_num": "1", "step_name": "Start Sub-Zap", "app": "Sub-Zap", "step_type": "Trigger", "type_group": "trigger", "source": "--", "transform": "Sub-Zap entry point", "destination": "--", "data_type": "Event", "purpose": "Initialize contract creation", "zap_idx": "z7"}, {"zap_name": "[Production] - Create Intacct Contract + Contract Lines", "zap_short": "Create Intacct Contract + Lines", "zap_id": "339339568", "step_num": "2", "step_name": "Default Payment Term", "app": "Code by Zapier", "step_type": "Set", "type_group": "transform", "source": "--", "transform": "Set default payment terms", "destination": "default_payment_term", "data_type": "String", "purpose": "Set contract default", "zap_idx": "z7"}, {"zap_name": "[Production] - Create Intacct Contract + Contract Lines", "zap_short": "Create Intacct Contract + Lines", "zap_id": "339339568", "step_num": "3", "step_name": "Date Formatter", "app": "Formatter by Zapier", "step_type": "Transform", "type_group": "transform", "source": "contract_date", "transform": "Format to MM/DD/YYYY", "destination": "formatted_date", "data_type": "String", "purpose": "Standardize date format", "zap_idx": "z7"}, {"zap_name": "[Production] - Create Intacct Contract + Contract Lines", "zap_short": "Create Intacct Contract + Lines", "zap_id": "339339568", "step_num": "4", "step_name": "Get Deal", "app": "HubSpot", "step_type": "Read", "type_group": "read", "source": "deal_id", "transform": "GET /crm/v3/objects/deals/{id}", "destination": "deal_data{}", "data_type": "Object", "purpose": "Retrieve full deal record", "zap_idx": "z7"}];
+
+var TYPE_CSS = {trigger:"tt",read:"tr",write:"tw",transform:"tx",conditional:"tc",utility:"tu","return":"tre"};
+var filters = {zap:"all",type:"all"};
+var search = "";
+var sortCol = null;
+var sortDir = 1;
+var expanded = {};
+
+function esc(s) {
+  if (!s) return "";
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function getRows() {
+  var out = [];
+  for (var i = 0; i < DATA.length; i++) {
+    var r = DATA[i];
+    if (filters.zap !== "all" && r.zap_idx !== filters.zap) continue;
+    if (filters.type !== "all" && r.type_group !== filters.type) continue;
+    if (search) {
+      var q = search.toLowerCase();
+      var hit = false;
+      var fields = [r.step_name, r.app, r.step_type, r.source, r.transform, r.destination, r.purpose, r.zap_short];
+      for (var j = 0; j < fields.length; j++) {
+        if (fields[j] && fields[j].toLowerCase().indexOf(q) >= 0) { hit = true; break; }
+      }
+      if (!hit) continue;
+    }
+    out.push(r);
+  }
+  if (sortCol) {
+    out.sort(function(a, b) {
+      var av = (a[sortCol] || "").toLowerCase();
+      var bv = (b[sortCol] || "").toLowerCase();
+      return av < bv ? -sortDir : av > bv ? sortDir : 0;
+    });
+  }
+  return out;
+}
+
+function render() {
+  var rows = getRows();
+  var tb = document.getElementById("tb");
+  var es = document.getElementById("es");
+  document.getElementById("rc").textContent = rows.length;
+  if (!rows.length) { tb.innerHTML = ""; es.style.display = "block"; return; }
+  es.style.display = "none";
+  var parts = [];
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    var id = "r" + i;
+    var isExp = !!expanded[id];
+    var tcls = TYPE_CSS[r.type_group] || "tu";
+    var src = (r.source && r.source !== "--") ? '<span class="fm">' + esc(r.source) + "</span>" : '<span class="fe">&mdash;</span>';
+    var dst = (r.destination && r.destination !== "--") ? '<span class="fm">' + esc(r.destination) + "</span>" : '<span class="fe">&mdash;</span>';
+    var dt  = (r.data_type && r.data_type !== "--") ? '<span class="dchip">' + esc(r.data_type) + "</span>" : "";
+    parts.push('<tr class="' + (isExp ? "expanded" : "") + '" data-id="' + id + '">');
+    parts.push('<td><span class="zb ' + esc(r.zap_idx) + '">' + esc(r.zap_short) + "</span></td>");
+    parts.push('<td style="font-family:DM Mono,monospace;font-size:11px;color:var(--muted)">' + esc(r.step_num) + "</td>");
+    parts.push('<td style="font-weight:500">' + esc(r.step_name) + "</td>");
+    parts.push('<td><span class="atxt">' + esc(r.app) + "</span></td>");
+    parts.push('<td><span class="stb ' + tcls + '">' + esc(r.step_type) + "</span></td>");
+    parts.push("<td>" + src + "</td>");
+    parts.push("<td>" + dst + "</td>");
+    parts.push("<td>" + dt + "</td>");
+    parts.push('<td><span class="exb">' + (isExp ? "&minus;" : "+") + "</span></td>");
+    parts.push("</tr>");
+    if (isExp) {
+      var tfm = (r.transform && r.transform !== "--") ? esc(r.transform) : '<span style="opacity:0.3">None</span>';
+      var prp = r.purpose ? esc(r.purpose) : '<span style="opacity:0.3">&mdash;</span>';
+      parts.push('<tr class="drow"><td colspan="9" class="dcell"><div class="dinner">');
+      parts.push('<div><div class="dk">Transformation / Logic</div><div class="dv">' + tfm + "</div></div>");
+      parts.push('<div><div class="dk">Purpose</div><div class="dv">' + prp + "</div></div>");
+      parts.push('<div><div class="dk">Zap</div><div class="dv">' + esc(r.zap_name) + "</div></div>");
+      parts.push('<div><div class="dk">Zap ID</div><div class="dvm">' + esc(r.zap_id) + "</div></div>");
+      parts.push("</div></td></tr>");
+    }
+  }
+  tb.innerHTML = parts.join("");
+}
+
+document.getElementById("tb").addEventListener("click", function(ev) {
+  var tr = ev.target.closest("tr");
+  if (!tr || tr.classList.contains("drow")) return;
+  var id = tr.getAttribute("data-id");
+  if (!id) return;
+  if (expanded[id]) delete expanded[id]; else expanded[id] = true;
+  render();
+});
+
+var pills = document.querySelectorAll(".pill[data-group]");
+for (var p = 0; p < pills.length; p++) {
+  pills[p].addEventListener("click", function() {
+    var g = this.getAttribute("data-group");
+    var v = this.getAttribute("data-val");
+    filters[g] = v;
+    var grpPills = document.querySelectorAll('.pill[data-group="' + g + '"]');
+    for (var k = 0; k < grpPills.length; k++) grpPills[k].classList.remove("active");
+    this.classList.add("active");
+    expanded = {};
+    render();
+  });
+}
+
+document.getElementById("searchInput").addEventListener("input", function() {
+  search = this.value.trim();
+  expanded = {};
+  render();
+});
+
+var ths = document.querySelectorAll("thead th[data-col]");
+for (var t = 0; t < ths.length; t++) {
+  ths[t].addEventListener("click", function() {
+    var col = this.getAttribute("data-col");
+    if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = 1; }
+    var allTh = document.querySelectorAll("thead th");
+    for (var k = 0; k < allTh.length; k++) allTh[k].classList.remove("sorted");
+    this.classList.add("sorted");
+    var si = this.querySelector(".si");
+    if (si) si.textContent = sortDir === 1 ? "↑" : "↓";
+    render();
+  });
+}
+
+render();
+</script>
+</body>
+</html>
