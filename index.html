@@ -356,30 +356,30 @@
   <header class="header">
     <div class="header-eyebrow">Beghou Consulting &nbsp;·&nbsp; Systems Architecture</div>
     <h1>Automated Integration Architecture</h1>
-    <p>End-to-end field-level data automation connecting commercial operations across three enterprise platforms</p>
+    <p>End-to-end automation connecting commercial operations across three enterprise platforms via 8 production Zap workflows</p>
   </header>
 
   <!-- STATS BAR -->
   <div class="stats-bar">
     <div class="stat-item">
-      <span class="stat-num pink">155</span>
-      <span class="stat-label">Automated Field Mappings</span>
+      <span class="stat-num pink">78</span>
+      <span class="stat-label">Production Zap Steps</span>
     </div>
     <div class="stat-item">
-      <span class="stat-num white">3</span>
-      <span class="stat-label">Source Objects</span>
+      <span class="stat-num white">8</span>
+      <span class="stat-label">Automated Workflows</span>
     </div>
     <div class="stat-item">
-      <span class="stat-num cyan">113</span>
-      <span class="stat-label">Fields → Intacct</span>
+      <span class="stat-num cyan">5</span>
+      <span class="stat-label">Intacct Workflows</span>
     </div>
     <div class="stat-item">
-      <span class="stat-num gold">42</span>
-      <span class="stat-label">Fields → Ruddr</span>
+      <span class="stat-num gold">2</span>
+      <span class="stat-label">Ruddr Workflows</span>
     </div>
     <div class="stat-item">
-      <span class="stat-num white">1:1</span>
-      <span class="stat-label">Cardinality Model</span>
+      <span class="stat-num white">9</span>
+      <span class="stat-label">Write Operations</span>
     </div>
   </div>
 
@@ -397,26 +397,26 @@
       <div class="system-desc">Commercial pipeline &amp; deal management — single source of truth</div>
 
       <div class="object-list">
-        <div class="object-item drillable" onclick="window.location='field_mapping_explorer.html?obj=Company'">
+        <div class="object-item drillable" onclick="window.location='field_mapping_explorer.html?zap=z4'">
           <div class="object-left">
             <span class="obj-icon">🏢</span>
             <span class="object-name">Company</span>
           </div>
-          <span class="object-fields badge-pink">4 fields</span>
+          <span class="object-fields badge-pink">Customer Zap</span>
         </div>
-        <div class="object-item drillable" onclick="window.location='field_mapping_explorer.html?obj=Deal'">
+        <div class="object-item drillable" onclick="window.location='field_mapping_explorer.html?zap=z0'">
           <div class="object-left">
             <span class="obj-icon">🤝</span>
             <span class="object-name">Deal</span>
           </div>
-          <span class="object-fields badge-pink">44 fields</span>
+          <span class="object-fields badge-pink">Main Flow</span>
         </div>
-        <div class="object-item drillable" onclick="window.location='field_mapping_explorer.html?obj=Product'">
+        <div class="object-item drillable" onclick="window.location='field_mapping_explorer.html?zap=z1'">
           <div class="object-left">
             <span class="obj-icon">📦</span>
             <span class="object-name">Product (Line Item)</span>
           </div>
-          <span class="object-fields badge-pink">107 fields</span>
+          <span class="object-fields badge-pink">Projects Zap</span>
         </div>
       </div>
 
@@ -450,7 +450,7 @@
     </div>
 
     <!-- INTACCT -->
-    <div class="system-card intacct card-intacct clickable" id="cardIntacct" onclick="window.location='field_mapping_explorer.html?sys=Intacct'">
+    <div class="system-card intacct card-intacct clickable" id="cardIntacct" onclick="window.location='field_mapping_explorer.html?zap=z0'">
       <div class="card-bg-label">IN</div>
       <div class="system-tag target-a">
         <span class="dot dot-cyan"></span>
@@ -460,26 +460,26 @@
       <div class="system-desc">Contract billing, revenue recognition &amp; project financials</div>
 
       <div class="object-list">
-        <div class="object-item drillable" onclick="event.stopPropagation();window.location='field_mapping_explorer.html?sys=Intacct&tobj=Contract'">
+        <div class="object-item drillable" onclick="event.stopPropagation();window.location='field_mapping_explorer.html?zap=z7'">
           <div class="object-left">
             <span class="obj-icon">📄</span>
             <span class="object-name">Contract</span>
           </div>
-          <span class="object-fields badge-cyan">14 fields</span>
+          <span class="object-fields badge-cyan">Contract + Lines Zap</span>
         </div>
-        <div class="object-item drillable" onclick="event.stopPropagation();window.location='field_mapping_explorer.html?sys=Intacct&tobj=Project'">
+        <div class="object-item drillable" onclick="event.stopPropagation();window.location='field_mapping_explorer.html?zap=z3'">
           <div class="object-left">
             <span class="obj-icon">🗂️</span>
             <span class="object-name">Project</span>
           </div>
-          <span class="object-fields badge-cyan">59 fields</span>
+          <span class="object-fields badge-cyan">Billable Tasks Zap</span>
         </div>
-        <div class="object-item drillable" onclick="event.stopPropagation();window.location='field_mapping_explorer.html?sys=Intacct&tobj=contract+line'">
+        <div class="object-item drillable" onclick="event.stopPropagation();window.location='field_mapping_explorer.html?zap=z7'">
           <div class="object-left">
             <span class="obj-icon">📋</span>
             <span class="object-name">Contract Line</span>
           </div>
-          <span class="object-fields badge-cyan">39 fields</span>
+          <span class="object-fields badge-cyan">Contract + Lines Zap</span>
         </div>
       </div>
 
@@ -494,11 +494,11 @@
           <span style="font-size:10px;padding:3px 8px;border-radius:6px;background:rgba(0,200,255,0.08);color:rgba(237,240,250,0.55);border:1px solid rgba(0,200,255,0.12);">+more</span>
         </div>
       </div>
-      <a class="drill-link cyan" href="field_mapping_explorer.html?sys=Intacct" onclick="event.stopPropagation()">View all 113 field mappings ↗</a>
+      <a class="drill-link cyan" href="field_mapping_explorer.html?zap=z0" onclick="event.stopPropagation()">Explore 5 Intacct workflows ↗</a>
     </div>
 
     <!-- RUDDR -->
-    <div class="system-card ruddr card-ruddr clickable" id="cardRuddr" onclick="window.location='field_mapping_explorer.html?sys=Ruddr'">
+    <div class="system-card ruddr card-ruddr clickable" id="cardRuddr" onclick="window.location='field_mapping_explorer.html?zap=z1'">
       <div class="card-bg-label">RU</div>
       <div class="system-tag target-b">
         <span class="dot dot-gold"></span>
@@ -508,12 +508,12 @@
       <div class="system-desc">Resource planning, project delivery &amp; utilization tracking</div>
 
       <div class="object-list">
-        <div class="object-item drillable" onclick="event.stopPropagation();window.location='field_mapping_explorer.html?sys=Ruddr&tobj=Project'">
+        <div class="object-item drillable" onclick="event.stopPropagation();window.location='field_mapping_explorer.html?zap=z1'">
           <div class="object-left">
             <span class="obj-icon">🗂️</span>
             <span class="object-name">Project</span>
           </div>
-          <span class="object-fields badge-gold">40 fields</span>
+          <span class="object-fields badge-gold">Ruddr Projects Zap</span>
         </div>
       </div>
 
@@ -528,22 +528,22 @@
           <span style="font-size:10px;padding:3px 8px;border-radius:6px;background:rgba(245,183,0,0.08);color:rgba(237,240,250,0.55);border:1px solid rgba(245,183,0,0.12);">+more</span>
         </div>
       </div>
-      <a class="drill-link gold" href="field_mapping_explorer.html?sys=Ruddr" onclick="event.stopPropagation()">View all 42 field mappings ↗</a>
+      <a class="drill-link gold" href="field_mapping_explorer.html?zap=z1" onclick="event.stopPropagation()">Explore 2 Ruddr workflows ↗</a>
     </div>
 
   </div><!-- /.diagram-area -->
 
   <!-- FLOW LEGEND TABLE -->
   <div class="flow-legend">
-    <div class="legend-title">Automated Data Flows — click to explore field mappings</div>
+    <div class="legend-title">Automated Data Flows — click to explore Zap workflows</div>
     <div class="legend-row">
-      <a class="legend-item" href="field_mapping_explorer.html?sys=Intacct" style="text-decoration:none;cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid transparent;transition:all 0.18s;" onmouseover="this.style.background='rgba(0,200,255,0.07)';this.style.borderColor='rgba(0,200,255,0.2)'" onmouseout="this.style.background='transparent';this.style.borderColor='transparent'">
+      <a class="legend-item" href="field_mapping_explorer.html?zap=z0" style="text-decoration:none;cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid transparent;transition:all 0.18s;" onmouseover="this.style.background='rgba(0,200,255,0.07)';this.style.borderColor='rgba(0,200,255,0.2)'" onmouseout="this.style.background='transparent';this.style.borderColor='transparent'">
         <div class="legend-line pink"></div>
-        HubSpot → Intacct &nbsp;<strong style="color:var(--cyan)">113 fields ↗</strong>
+        HubSpot → Intacct &nbsp;<strong style="color:var(--cyan)">5 workflows ↗</strong>
       </a>
-      <a class="legend-item" href="field_mapping_explorer.html?sys=Ruddr" style="text-decoration:none;cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid transparent;transition:all 0.18s;" onmouseover="this.style.background='rgba(245,183,0,0.07)';this.style.borderColor='rgba(245,183,0,0.2)'" onmouseout="this.style.background='transparent';this.style.borderColor='transparent'">
+      <a class="legend-item" href="field_mapping_explorer.html?zap=z1" style="text-decoration:none;cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid transparent;transition:all 0.18s;" onmouseover="this.style.background='rgba(245,183,0,0.07)';this.style.borderColor='rgba(245,183,0,0.2)'" onmouseout="this.style.background='transparent';this.style.borderColor='transparent'">
         <div class="legend-line gold"></div>
-        HubSpot → Ruddr &nbsp;<strong style="color:var(--gold)">42 fields ↗</strong>
+        HubSpot → Ruddr &nbsp;<strong style="color:var(--gold)">2 workflows ↗</strong>
       </a>
       <div style="flex:1"></div>
       <a href="field_mapping_explorer.html" style="font-size:11px;color:rgba(237,240,250,0.4);text-decoration:none;border:1px solid var(--card-border);border-radius:7px;padding:6px 13px;transition:all 0.18s;" onmouseover="this.style.color='white';this.style.borderColor='rgba(255,255,255,0.25)'" onmouseout="this.style.color='rgba(237,240,250,0.4)';this.style.borderColor='var(--card-border)'">
@@ -692,8 +692,8 @@ function drawConnectors() {
 
   const inBadgeY = (inMid - colRect.top + colRect.top - colRect.top) ;
   // midpoints
-  badge(inMid, '#00C8FF', '113', 'FIELDS');
-  badge(ruMid, '#F5B700',  '42', 'FIELDS');
+  badge(inMid, '#00C8FF', '5', 'ZAPS');
+  badge(ruMid, '#F5B700',  '2', 'ZAPS');
 }
 
 // Run after fonts/layout settle
